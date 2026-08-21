@@ -15,6 +15,14 @@
       "email": null,
       "address": null,
       "created_at": "2026-08-21T17:39:29.356Z"
+    },
+    {
+      "id": "a788af24-822a-4a7d-be73-b6136cfd13d3",
+      "name": "kunnu",
+      "phone": "7898574857",
+      "email": "patipadmadatta@gmail.com",
+      "address": "AT APILO,PO-JHADESWARPUR,BLOCK-MAHANGA",
+      "created_at": "2026-08-21T17:58:33.637Z"
     }
   ],
   "bills": [
@@ -23,7 +31,7 @@
       "bill_number": "LF-0001",
       "payer_id": "01c171e3-3e68-473b-b4ec-01d31ff84847",
       "date": "2026-08-21T17:38:52.352Z",
-      "due_date": "2026-08-31T17:38:52.184Z",
+      "due_date": "2026-08-09T17:38:52.184Z",
       "levy_rate": 5,
       "service_fee": 100,
       "service_fee_settled": false,

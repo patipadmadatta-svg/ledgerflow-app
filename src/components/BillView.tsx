@@ -40,6 +40,8 @@ interface Bill {
   billTotal: number;
   outstandingLines: number;
   outstandingFee: number;
+  lateFees: number;
+  daysOverdue: number;
   totalOutstanding: number;
 }
 
@@ -287,6 +289,12 @@ export default function BillView({ initialBill, onMutation }: BillViewProps) {
             <span style={{ color: 'var(--text-secondary)' }}>Service Labor Fee:</span>
             <span>{formatCurrency(bill.service_fee)}</span>
           </div>
+          {bill.lateFees > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-danger)', fontWeight: 500 }}>
+              <span>Overdue Late Fees:</span>
+              <span>+{formatCurrency(bill.lateFees)}</span>
+            </div>
+          )}
           <div style={{
             display: 'flex', 
             justifyContent: 'space-between', 

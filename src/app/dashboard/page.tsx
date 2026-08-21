@@ -72,6 +72,8 @@ export default function Dashboard() {
     );
   }
 
+  const overdueBillsWithFees = bills.filter((b: any) => b.lateFees > 0);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {/* Top Welcome Title */}
@@ -103,6 +105,46 @@ export default function Dashboard() {
             outstandingPayers={outstanding} 
             onMutation={fetchDashboardData} 
           />
+
+          {/* Late Fees & Interest Tracker Card */}
+          <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', fontSize: '1.15rem', color: 'var(--color-danger)' }}>
+              ⚠️ Late Fees & Overdue Interest
+            </h3>
+            {overdueBillsWithFees.length === 0 ? (
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', padding: '1rem 0' }}>
+                No active late fees. All overdue accounts are within the 5-day grace period.
+              </p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {overdueBillsWithFees.map((bill: any) => (
+                  <div key={bill.id} style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '0.6rem 0.8rem',
+                    background: 'rgba(239, 68, 68, 0.02)',
+                    border: '1px solid rgba(239, 68, 68, 0.1)',
+                    borderRadius: '8px',
+                    fontSize: '0.9rem'
+                  }}>
+                    <div>
+                      <strong style={{ color: 'white' }}>{bill.bill_number}</strong>
+                      <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginLeft: '0.5rem' }}>
+                        {bill.payers?.name || 'Payer'}
+                      </span>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                        Overdue by {bill.daysOverdue} days (₹100 / 5 days)
+                      </div>
+                    </div>
+                    <div style={{ textAlign: 'right', fontWeight: 'bold', color: 'var(--color-danger)', fontSize: '0.95rem' }}>
+                      + ₹ {bill.lateFees}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

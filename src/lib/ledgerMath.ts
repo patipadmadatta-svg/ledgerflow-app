@@ -41,6 +41,8 @@ export interface DerivedBillTotals {
   billTotal: number;
   outstandingLines: number;
   outstandingFee: number;
+  lateFees: number;
+  daysOverdue: number;
   totalOutstanding: number;
   derivedState: 'DRAFT' | 'ISSUED' | 'PART_SETTLED' | 'SETTLED' | 'LAPSED';
 }
@@ -90,9 +92,27 @@ export function computeBillTotals(
 
   const margin = lineRevenue - lineCost;
   const levyAmount = lineRevenue * (bill.levy_rate / 100);
-  const billTotal = lineRevenue + bill.service_fee + levyAmount;
+  const baseOutstanding = outstandingLines + (bill.service_fee_settled ? 0 : bill.service_fee);
+  
+  // Calculate Late Fees: 100 rupees for every 5 days overdue if outstanding > 0
+  let lateFees = 0;
+  let daysOverdue = 0;
+  
+  if (baseOutstanding > 0) {
+    const dueTime = new Date(bill.due_date).getTime();
+    const nowTime = new Date().getTime();
+    if (nowTime > dueTime) {
+      const diffMs = nowTime - dueTime;
+      daysOverdue = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      if (daysOverdue >= 5) {
+        lateFees = Math.floor(daysOverdue / 5) * 100;
+      }
+    }
+  }
+
+  const billTotal = lineRevenue + bill.service_fee + levyAmount + lateFees;
   const outstandingFee = bill.service_fee_settled ? 0 : bill.service_fee;
-  const totalOutstanding = outstandingLines + outstandingFee;
+  const totalOutstanding = baseOutstanding + lateFees;
 
   // State derivation:
   // if totalOutstanding === billTotal -> ISSUED
@@ -130,6 +150,8 @@ export function computeBillTotals(
     billTotal: Math.round(billTotal * 100) / 100,
     outstandingLines: Math.round(outstandingLines * 100) / 100,
     outstandingFee: Math.round(outstandingFee * 100) / 100,
+    lateFees,
+    daysOverdue,
     totalOutstanding: Math.round(totalOutstanding * 100) / 100,
     derivedState
   };
