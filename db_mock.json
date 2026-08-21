@@ -1,0 +1,91 @@
+{
+  "payers": [
+    {
+      "id": "01c171e3-3e68-473b-b4ec-01d31ff84847",
+      "name": "Acme Test Corp",
+      "phone": "9876543210",
+      "email": "billing@acmetest.com",
+      "address": "Test Valley, CA",
+      "created_at": "2026-08-21T17:38:52.167Z"
+    },
+    {
+      "id": "2d2572a8-b056-403d-9b6a-c192aca13696",
+      "name": "Delta Partner Corp",
+      "phone": "9998887776",
+      "email": null,
+      "address": null,
+      "created_at": "2026-08-21T17:39:29.356Z"
+    }
+  ],
+  "bills": [
+    {
+      "id": "73d1ce00-3c8c-4337-808d-65f8631ed398",
+      "bill_number": "LF-0001",
+      "payer_id": "01c171e3-3e68-473b-b4ec-01d31ff84847",
+      "date": "2026-08-21T17:38:52.352Z",
+      "due_date": "2026-08-31T17:38:52.184Z",
+      "levy_rate": 5,
+      "service_fee": 100,
+      "service_fee_settled": false,
+      "state": "ISSUED",
+      "created_at": "2026-08-21T17:38:52.352Z",
+      "updated_at": "2026-08-21T17:38:53.305Z"
+    },
+    {
+      "id": "bce21901-dcc1-4e76-8c69-23afcd04927d",
+      "bill_number": "LF-0002",
+      "payer_id": "2d2572a8-b056-403d-9b6a-c192aca13696",
+      "date": "2026-08-21T17:39:29.381Z",
+      "due_date": "2026-09-05T17:39:29.360Z",
+      "levy_rate": 0,
+      "service_fee": 0,
+      "service_fee_settled": false,
+      "state": "ISSUED",
+      "created_at": "2026-08-21T17:39:29.382Z",
+      "updated_at": "2026-08-21T17:39:29.382Z"
+    }
+  ],
+  "bill_lines": [
+    {
+      "id": "559fef8e-a656-4952-bd43-9ffdb2450737",
+      "bill_id": "73d1ce00-3c8c-4337-808d-65f8631ed398",
+      "label": "Cloud Hosting Setup",
+      "unit_cost": 200,
+      "unit_charge": 300,
+      "qty": 2,
+      "settled": true
+    },
+    {
+      "id": "34383453-4942-4d8a-82ff-ec076e44c85c",
+      "bill_id": "73d1ce00-3c8c-4337-808d-65f8631ed398",
+      "label": "Security Consultation",
+      "unit_cost": 1000,
+      "unit_charge": 1500,
+      "qty": 1,
+      "settled": false
+    },
+    {
+      "id": "2947201f-8136-4151-8bba-c45ae8ff93db",
+      "bill_id": "bce21901-dcc1-4e76-8c69-23afcd04927d",
+      "label": "Software Licensing",
+      "unit_cost": 4000,
+      "unit_charge": 5000,
+      "qty": 1,
+      "settled": false
+    }
+  ],
+  "cashbridge_offers": [
+    {
+      "id": "d24fe890-f5a4-4b7e-98bb-d6662201ab6b",
+      "bill_id": "bce21901-dcc1-4e76-8c69-23afcd04927d",
+      "amount": 5000,
+      "due_date": "2026-09-05T17:39:29.360Z",
+      "discount_rate": 8,
+      "payout_amount": 4600,
+      "status": "CLAIMED",
+      "created_at": "2026-08-21T17:39:29.537Z",
+      "updated_at": "2026-08-21T17:39:29.886Z",
+      "claimed_by": "buyer_team_zeta"
+    }
+  ]
+}
