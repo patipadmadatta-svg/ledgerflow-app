@@ -45,8 +45,15 @@ export default function BillComposer() {
   // Fetch payers
   useEffect(() => {
     async function loadPayers() {
+      const sessionStr = localStorage.getItem('ledgerflow_session');
+      if (!sessionStr) return;
+      const session = JSON.parse(sessionStr);
+      const userId = session.userId;
+
       try {
-        const res = await fetch('/api/payers');
+        const res = await fetch('/api/payers', {
+          headers: { 'x-user-id': userId }
+        });
         if (res.ok) {
           const data = await res.json();
           setPayers(data);
@@ -93,12 +100,20 @@ export default function BillComposer() {
       setPayerError('Name and phone are required');
       return;
     }
+    const sessionStr = localStorage.getItem('ledgerflow_session');
+    if (!sessionStr) return;
+    const session = JSON.parse(sessionStr);
+    const userId = session.userId;
+
     setCreatingPayer(true);
     setPayerError('');
     try {
       const res = await fetch('/api/payers', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-user-id': userId
+        },
         body: JSON.stringify({
           name: newPayerName,
           phone: newPayerPhone,
@@ -140,11 +155,19 @@ export default function BillComposer() {
       return;
     }
 
+    const sessionStr = localStorage.getItem('ledgerflow_session');
+    if (!sessionStr) return;
+    const session = JSON.parse(sessionStr);
+    const userId = session.userId;
+
     setSubmitting(true);
     try {
       const res = await fetch('/api/bills', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-user-id': userId
+        },
         body: JSON.stringify({
           payer_id: payerId,
           due_date: new Date(dueDate).toISOString(),

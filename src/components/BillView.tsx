@@ -76,10 +76,18 @@ export default function BillView({ initialBill, onMutation }: BillViewProps) {
   // Toggle settled status of a line
   const handleToggleLineSettled = async (lineId: string, currentSettled: boolean) => {
     setUpdating(lineId);
+    const sessionStr = localStorage.getItem('ledgerflow_session');
+    if (!sessionStr) return;
+    const session = JSON.parse(sessionStr);
+    const userId = session.userId;
+
     try {
       const res = await fetch(`/api/bills/${bill.id}/lines/${lineId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-user-id': userId
+        },
         body: JSON.stringify({ settled: !currentSettled })
       });
 
@@ -102,10 +110,18 @@ export default function BillView({ initialBill, onMutation }: BillViewProps) {
   // Toggle settled status of the service fee
   const handleToggleFeeSettled = async () => {
     setUpdating('service-fee');
+    const sessionStr = localStorage.getItem('ledgerflow_session');
+    if (!sessionStr) return;
+    const session = JSON.parse(sessionStr);
+    const userId = session.userId;
+
     try {
       const res = await fetch(`/api/bills/${bill.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-user-id': userId
+        },
         body: JSON.stringify({ service_fee_settled: !bill.service_fee_settled })
       });
 
@@ -127,8 +143,16 @@ export default function BillView({ initialBill, onMutation }: BillViewProps) {
   // Delete invoice
   const handleDeleteInvoice = async () => {
     if (!confirm(`Are you sure you want to delete invoice ${bill.bill_number}?`)) return;
+    const sessionStr = localStorage.getItem('ledgerflow_session');
+    if (!sessionStr) return;
+    const session = JSON.parse(sessionStr);
+    const userId = session.userId;
+
     try {
-      const res = await fetch(`/api/bills/${bill.id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/bills/${bill.id}`, { 
+        method: 'DELETE',
+        headers: { 'x-user-id': userId }
+      });
       if (res.ok) {
         window.location.href = '/dashboard';
       } else {

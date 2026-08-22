@@ -9,10 +9,15 @@ export async function GET(
   try {
     const params = await context.params;
     const { id } = params;
+    const userId = request.headers.get('x-user-id') || 'default-freelancer-id';
 
     const bill = await getBillById(id);
     if (!bill) {
       return NextResponse.json({ error: 'Bill not found' }, { status: 404 });
+    }
+
+    if ((bill.user_id || 'default-freelancer-id') !== userId) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const totals = computeBillTotals(bill, bill.bill_lines || []);
@@ -34,6 +39,16 @@ export async function PATCH(
   try {
     const params = await context.params;
     const { id } = params;
+    const userId = request.headers.get('x-user-id') || 'default-freelancer-id';
+
+    const bill = await getBillById(id);
+    if (!bill) {
+      return NextResponse.json({ error: 'Bill not found' }, { status: 404 });
+    }
+
+    if ((bill.user_id || 'default-freelancer-id') !== userId) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     const body = await request.json();
     const allowedUpdates: any = {};
@@ -68,6 +83,16 @@ export async function DELETE(
   try {
     const params = await context.params;
     const { id } = params;
+    const userId = request.headers.get('x-user-id') || 'default-freelancer-id';
+
+    const bill = await getBillById(id);
+    if (!bill) {
+      return NextResponse.json({ error: 'Bill not found' }, { status: 404 });
+    }
+
+    if ((bill.user_id || 'default-freelancer-id') !== userId) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     const success = await deleteBill(id);
     if (!success) {
