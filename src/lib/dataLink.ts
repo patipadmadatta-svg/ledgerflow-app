@@ -26,21 +26,43 @@ export const supabase = createClient(
 );
 
 // File Path for Local JSON Fallback DB
-const MOCK_DB_PATH = path.join(process.cwd(), 'db_mock.json');
+const BUILD_DB_PATH = path.join(process.cwd(), 'db_mock.json');
+const MOCK_DB_PATH = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME
+  ? path.join('/tmp', 'db_mock.json')
+  : BUILD_DB_PATH;
 
 function readMockDB() {
   if (!fs.existsSync(MOCK_DB_PATH)) {
-    const initialData = {
-      payers: [],
-      bills: [],
-      bill_lines: [],
-      cashbridge_offers: [],
-      upi_transactions: [],
-      users: [],
-      pending_otps: []
-    };
-    fs.writeFileSync(MOCK_DB_PATH, JSON.stringify(initialData, null, 2));
-    return initialData;
+    if (fs.existsSync(BUILD_DB_PATH) && MOCK_DB_PATH !== BUILD_DB_PATH) {
+      try {
+        fs.copyFileSync(BUILD_DB_PATH, MOCK_DB_PATH);
+      } catch (copyErr) {
+        console.error('Failed to copy seed DB to /tmp, writing fresh:', copyErr);
+        const initialData = {
+          payers: [],
+          bills: [],
+          bill_lines: [],
+          cashbridge_offers: [],
+          upi_transactions: [],
+          users: [],
+          pending_otps: []
+        };
+        fs.writeFileSync(MOCK_DB_PATH, JSON.stringify(initialData, null, 2));
+        return initialData;
+      }
+    } else {
+      const initialData = {
+        payers: [],
+        bills: [],
+        bill_lines: [],
+        cashbridge_offers: [],
+        upi_transactions: [],
+        users: [],
+        pending_otps: []
+      };
+      fs.writeFileSync(MOCK_DB_PATH, JSON.stringify(initialData, null, 2));
+      return initialData;
+    }
   }
   try {
     const data = fs.readFileSync(MOCK_DB_PATH, 'utf-8');
