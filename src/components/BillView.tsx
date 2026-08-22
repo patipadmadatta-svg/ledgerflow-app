@@ -181,6 +181,24 @@ export default function BillView({ initialBill, onMutation }: BillViewProps) {
     }
   };
 
+  // Share payment link and QR overview via WhatsApp
+  const handleShareQrWhatsApp = () => {
+    if (!bill.payers?.phone) {
+      alert('Payer phone number is not available');
+      return;
+    }
+    
+    const pageUrl = window.location.href;
+    let cleanPhone = bill.payers.phone.replace(/[^0-9]/g, '');
+    if (cleanPhone.length === 10) {
+      cleanPhone = '91' + cleanPhone;
+    }
+
+    const messageText = `Hi ${bill.payers.name},\n\nPlease find the payment details of *₹${bill.totalOutstanding.toLocaleString('en-IN')}* for *Invoice ${bill.bill_number}*.\n\n🔗 *Pay via UPI Link*:\n${upiPayUri}\n\n📱 *View Invoice & QR Code*:\n${pageUrl}\n\nThank you!`;
+    const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageText)}`;
+    window.open(waUrl, '_blank');
+  };
+
   return (
     <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       {/* Invoice Top Meta */}
@@ -261,34 +279,57 @@ export default function BillView({ initialBill, onMutation }: BillViewProps) {
               borderRadius: '8px',
               padding: '1rem',
               display: 'flex',
-              alignItems: 'center',
-              gap: '1.25rem'
+              flexDirection: 'column',
+              gap: '0.75rem'
             }}>
-              <div style={{
-                background: 'white',
-                padding: '0.5rem',
-                borderRadius: '8px',
-                display: 'inline-flex'
-              }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img 
-                  src={invoiceQrUrl} 
-                  alt="Invoice QR" 
-                  style={{ width: '80px', height: '80px', display: 'block' }} 
-                />
-              </div>
-              <div>
-                <h5 style={{ fontSize: '0.85rem', color: 'white', marginBottom: '0.15rem' }}>
-                  {t('Scan to Pay')}
-                </h5>
-                <div style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--color-warning)', marginBottom: '0.25rem' }}>
-                  {formatCurrency(bill.totalOutstanding)}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                <div style={{
+                  background: 'white',
+                  padding: '0.5rem',
+                  borderRadius: '8px',
+                  display: 'inline-flex'
+                }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img 
+                    src={invoiceQrUrl} 
+                    alt="Invoice QR" 
+                    style={{ width: '80px', height: '80px', display: 'block' }} 
+                  />
                 </div>
-                <p style={{ fontSize: '0.725rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
-                  UPI: {upiId}<br/>
-                  Payee: {payeeName}
-                </p>
+                <div>
+                  <h5 style={{ fontSize: '0.85rem', color: 'white', marginBottom: '0.15rem' }}>
+                    {t('Scan to Pay')}
+                  </h5>
+                  <div style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--color-warning)', marginBottom: '0.25rem' }}>
+                    {formatCurrency(bill.totalOutstanding)}
+                  </div>
+                  <p style={{ fontSize: '0.725rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
+                    UPI: {upiId}<br/>
+                    Payee: {payeeName}
+                  </p>
+                </div>
               </div>
+              
+              <button 
+                type="button" 
+                onClick={handleShareQrWhatsApp}
+                className="btn btn-secondary btn-sm"
+                style={{
+                  width: '100%',
+                  border: '1px solid #25D366',
+                  color: '#25D366',
+                  background: 'transparent',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  cursor: 'pointer',
+                  padding: '0.45rem 0'
+                }}
+              >
+                💬 {t('Share Payment details')}
+              </button>
             </div>
           )}
         </div>
