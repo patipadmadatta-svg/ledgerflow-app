@@ -40,14 +40,8 @@ export default function HeaderControls() {
     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
       {!isLoginPage && session && (
         <nav className="nav-links" style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
-          {session.role === 'freelancer' ? (
-            <>
-              <Link href="/dashboard" className="nav-link">Dashboard</Link>
-              <Link href="/payers" className="nav-link">Payers</Link>
-            </>
-          ) : (
-            <Link href="/client-portal" className="nav-link">Client Portal</Link>
-          )}
+          <Link href="/dashboard" className="nav-link">Dashboard</Link>
+          <Link href="/payers" className="nav-link">Payers</Link>
         </nav>
       )}
       

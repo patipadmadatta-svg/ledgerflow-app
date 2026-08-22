@@ -29,10 +29,20 @@ export default function PayerProfilePage({
   };
 
   useEffect(() => {
+    const sessionStr = localStorage.getItem('ledgerflow_session');
+    if (!sessionStr) {
+      window.location.href = '/login';
+      return;
+    }
+    const session = JSON.parse(sessionStr);
+    const userId = session.userId;
+
     async function loadPayerProfile() {
       try {
         const resolvedParams = await params;
-        const res = await fetch(`/api/payers/${resolvedParams.id}`);
+        const res = await fetch(`/api/payers/${resolvedParams.id}`, {
+          headers: { 'x-user-id': userId }
+        });
         if (res.ok) {
           const data = await res.json();
           setPayer(data);

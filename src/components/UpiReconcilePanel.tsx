@@ -28,8 +28,15 @@ export default function UpiReconcilePanel({ bills, onMutation }: UpiReconcilePan
   const [matchingTxId, setMatchingTxId] = useState<string | null>(null);
 
   const fetchTransactions = async () => {
+    const sessionStr = localStorage.getItem('ledgerflow_session');
+    if (!sessionStr) return;
+    const session = JSON.parse(sessionStr);
+    const userId = session.userId;
+
     try {
-      const res = await fetch('/api/upi/transactions');
+      const res = await fetch('/api/upi/transactions', {
+        headers: { 'x-user-id': userId }
+      });
       if (res.ok) {
         const data = await res.json();
         setTransactions(data);
@@ -47,6 +54,11 @@ export default function UpiReconcilePanel({ bills, onMutation }: UpiReconcilePan
     e.preventDefault();
     if (!simName.trim() || !simAmount || submitting) return;
 
+    const sessionStr = localStorage.getItem('ledgerflow_session');
+    if (!sessionStr) return;
+    const session = JSON.parse(sessionStr);
+    const userId = session.userId;
+
     setSubmitting(true);
     const amountVal = Number(simAmount);
     // Generate a mock UTR
@@ -55,7 +67,10 @@ export default function UpiReconcilePanel({ bills, onMutation }: UpiReconcilePan
     try {
       const res = await fetch('/api/upi/transactions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-user-id': userId
+        },
         body: JSON.stringify({
           utr: randomUtr,
           payerName: simName.trim(),

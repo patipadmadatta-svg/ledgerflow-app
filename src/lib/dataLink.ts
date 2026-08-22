@@ -105,7 +105,8 @@ export async function createPayer(payer: Omit<Payer, 'id' | 'created_at'>): Prom
       phone: payer.phone,
       email: payer.email || null,
       address: payer.address || null,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
+      user_id: payer.user_id || 'default-freelancer-id'
     };
     db.payers.push(newPayer);
     writeMockDB(db);
@@ -177,6 +178,7 @@ export async function createBill(
     service_fee: number;
     service_fee_settled: boolean;
     state: string;
+    user_id?: string;
   },
   lines: {
     label: string;
@@ -204,7 +206,8 @@ export async function createBill(
       service_fee_settled: Boolean(bill.service_fee_settled),
       state: bill.state,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
+      user_id: bill.user_id || 'default-freelancer-id'
     };
 
     const newLines = lines.map((line) => ({
@@ -423,7 +426,8 @@ export async function createUpiTransaction(tx: Omit<UpiTransaction, 'id' | 'rece
     const newTx: UpiTransaction = {
       id: crypto.randomUUID(),
       ...tx,
-      received_at: new Date().toISOString()
+      received_at: new Date().toISOString(),
+      user_id: tx.user_id || 'default-freelancer-id'
     };
     db.upi_transactions.push(newTx);
     writeMockDB(db);

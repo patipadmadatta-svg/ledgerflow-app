@@ -25,11 +25,16 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   const fetchDashboardData = async () => {
+    const sessionStr = localStorage.getItem('ledgerflow_session');
+    if (!sessionStr) return;
+    const session = JSON.parse(sessionStr);
+    const userId = session.userId;
+
     try {
       const [billsRes, summaryRes, outstandingRes] = await Promise.all([
-        fetch('/api/bills'),
-        fetch('/api/wheel/summary'),
-        fetch('/api/outstanding')
+        fetch('/api/bills', { headers: { 'x-user-id': userId } }),
+        fetch('/api/wheel/summary', { headers: { 'x-user-id': userId } }),
+        fetch('/api/outstanding', { headers: { 'x-user-id': userId } })
       ]);
 
       if (billsRes.ok && summaryRes.ok && outstandingRes.ok) {
@@ -53,11 +58,6 @@ export default function Dashboard() {
     const sessionStr = localStorage.getItem('ledgerflow_session');
     if (!sessionStr) {
       window.location.href = '/login';
-      return;
-    }
-    const session = JSON.parse(sessionStr);
-    if (session.role === 'client') {
-      window.location.href = '/client-portal';
       return;
     }
 

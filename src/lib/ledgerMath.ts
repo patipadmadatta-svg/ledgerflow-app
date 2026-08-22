@@ -5,6 +5,7 @@ export interface Payer {
   email?: string | null;
   address?: string | null;
   created_at: string;
+  user_id?: string;
 }
 
 export interface BillLine {
@@ -31,6 +32,7 @@ export interface RawBill {
   updated_at: string;
   payers?: Payer;
   bill_lines?: BillLine[];
+  user_id?: string;
 }
 
 export interface DerivedBillTotals {
@@ -199,5 +201,6 @@ export interface UpiTransaction {
   matched_bill_id?: string | null;
   matched_line_id?: string | null;
   status: 'UNMATCHED' | 'MATCHED' | 'PARTIAL_MATCH' | 'IGNORED';
+  user_id?: string;
 }
 

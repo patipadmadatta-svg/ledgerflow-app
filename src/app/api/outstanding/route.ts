@@ -2,9 +2,11 @@ import { NextResponse } from 'next/server';
 import { getBills } from '@/lib/dataLink';
 import { computeBillTotals } from '@/lib/ledgerMath';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const userId = request.headers.get('x-user-id') || 'default-freelancer-id';
     const bills = await getBills();
+    const filteredBills = bills.filter((b: any) => (b.user_id || 'default-freelancer-id') === userId);
 
     // Group unsettled lines and service fees by payer
     const payersMap: Record<
@@ -34,7 +36,7 @@ export async function GET() {
       }
     > = {};
 
-    for (const bill of bills) {
+    for (const bill of filteredBills) {
       const totals = computeBillTotals(bill, bill.bill_lines || []);
 
       const hasOutstandingLines = totals.outstandingLines > 0;

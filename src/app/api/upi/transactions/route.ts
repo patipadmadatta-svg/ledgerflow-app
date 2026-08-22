@@ -3,10 +3,12 @@ import { getUpiTransactions, createUpiTransaction, getBills, updateBill, updateB
 import { computeBillTotals } from '@/lib/ledgerMath';
 import { reconcileTransaction } from '@/lib/reconcile';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const userId = request.headers.get('x-user-id') || 'default-freelancer-id';
     const transactions = await getUpiTransactions();
-    return NextResponse.json(transactions);
+    const filteredTxs = transactions.filter((t: any) => (t.user_id || 'default-freelancer-id') === userId);
+    return NextResponse.json(filteredTxs);
   } catch (error: any) {
     console.error('Error fetching transactions:', error);
     return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
@@ -15,6 +17,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const userId = request.headers.get('x-user-id') || 'default-freelancer-id';
     const body = await request.json();
     const { utr, payerName, amount } = body;
 
@@ -25,9 +28,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // 1. Fetch and compute candidate bills
+    // 1. Fetch and compute candidate bills (filtered by user)
     const rawBills = await getBills();
-    const candidateBills = rawBills.map(bill => {
+    const userBills = rawBills.filter((b: any) => (b.user_id || 'default-freelancer-id') === userId);
+    const candidateBills = userBills.map(bill => {
       const totals = computeBillTotals(bill, bill.bill_lines || []);
       return {
         ...bill,
@@ -45,7 +49,8 @@ export async function POST(request: Request) {
       amount: Number(amount),
       matched_bill_id: match.matchedBillId,
       matched_line_id: match.matchedLineId,
-      status: match.status
+      status: match.status,
+      user_id: userId
     };
 
     const newTransaction = await createUpiTransaction(transactionData);

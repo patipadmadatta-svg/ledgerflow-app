@@ -2,10 +2,12 @@ import { NextResponse } from 'next/server';
 import { getBills, createBill } from '@/lib/dataLink';
 import { computeBillTotals } from '@/lib/ledgerMath';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const userId = request.headers.get('x-user-id') || 'default-freelancer-id';
     const bills = await getBills();
-    const computedBills = bills.map((bill) => {
+    const filteredBills = bills.filter((b: any) => (b.user_id || 'default-freelancer-id') === userId);
+    const computedBills = filteredBills.map((bill) => {
       const totals = computeBillTotals(bill, bill.bill_lines || []);
       return {
         ...bill,
@@ -22,6 +24,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const userId = request.headers.get('x-user-id') || 'default-freelancer-id';
     const body = await request.json();
     const { payer_id, due_date, levy_rate, service_fee, service_fee_settled, state, bill_lines } = body;
 
@@ -38,7 +41,8 @@ export async function POST(request: Request) {
       levy_rate: Number(levy_rate || 0),
       service_fee: Number(service_fee || 0),
       service_fee_settled: Boolean(service_fee_settled || false),
-      state: state || 'ISSUED'
+      state: state || 'ISSUED',
+      user_id: userId
     };
 
     const newBill = await createBill(billData, bill_lines);

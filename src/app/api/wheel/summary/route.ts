@@ -2,10 +2,12 @@ import { NextResponse } from 'next/server';
 import { getBills } from '@/lib/dataLink';
 import { computeBillTotals, computeWheelSummary } from '@/lib/ledgerMath';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const userId = request.headers.get('x-user-id') || 'default-freelancer-id';
     const bills = await getBills();
-    const computedBills = bills.map((bill) => {
+    const filteredBills = bills.filter((b: any) => (b.user_id || 'default-freelancer-id') === userId);
+    const computedBills = filteredBills.map((bill) => {
       const totals = computeBillTotals(bill, bill.bill_lines || []);
       return {
         ...bill,

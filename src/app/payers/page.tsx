@@ -24,8 +24,13 @@ export default function PayerDirectory() {
   const [saving, setSaving] = useState(false);
 
   const fetchPayers = async () => {
+    const sessionStr = localStorage.getItem('ledgerflow_session');
+    if (!sessionStr) return;
+    const session = JSON.parse(sessionStr);
+    const userId = session.userId;
+
     try {
-      const res = await fetch('/api/payers');
+      const res = await fetch('/api/payers', { headers: { 'x-user-id': userId } });
       if (res.ok) {
         const data = await res.json();
         setPayers(data);
@@ -43,11 +48,6 @@ export default function PayerDirectory() {
       window.location.href = '/login';
       return;
     }
-    const session = JSON.parse(sessionStr);
-    if (session.role === 'client') {
-      window.location.href = '/client-portal';
-      return;
-    }
 
     fetchPayers();
   }, []);
@@ -58,11 +58,19 @@ export default function PayerDirectory() {
       alert('Name and phone are required');
       return;
     }
+    const sessionStr = localStorage.getItem('ledgerflow_session');
+    if (!sessionStr) return;
+    const session = JSON.parse(sessionStr);
+    const userId = session.userId;
+
     setSaving(true);
     try {
       const res = await fetch('/api/payers', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-user-id': userId
+        },
         body: JSON.stringify({ name, phone, email: email || null, address: address || null })
       });
 
