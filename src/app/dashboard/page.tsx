@@ -49,6 +49,18 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    // Redirection / Session Lock Guard
+    const sessionStr = localStorage.getItem('ledgerflow_session');
+    if (!sessionStr) {
+      window.location.href = '/login';
+      return;
+    }
+    const session = JSON.parse(sessionStr);
+    if (session.role === 'client') {
+      window.location.href = '/client-portal';
+      return;
+    }
+
     fetchDashboardData();
     
     // Auto-polling refetch every 5 seconds to keep the Money Wheel live and dynamic

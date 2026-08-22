@@ -38,6 +38,17 @@ export default function PayerDirectory() {
   };
 
   useEffect(() => {
+    const sessionStr = localStorage.getItem('ledgerflow_session');
+    if (!sessionStr) {
+      window.location.href = '/login';
+      return;
+    }
+    const session = JSON.parse(sessionStr);
+    if (session.role === 'client') {
+      window.location.href = '/client-portal';
+      return;
+    }
+
     fetchPayers();
   }, []);
 

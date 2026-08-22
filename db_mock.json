@@ -129,10 +129,10 @@
       "due_date": "2026-09-04T00:00:00.000Z",
       "levy_rate": 0.05,
       "service_fee": 30,
-      "service_fee_settled": false,
+      "service_fee_settled": true,
       "state": "ISSUED",
       "created_at": "2026-08-21T19:41:31.769Z",
-      "updated_at": "2026-08-22T10:27:43.136Z"
+      "updated_at": "2026-08-22T19:29:00.828Z"
     },
     {
       "id": "8f2ce5d0-72cb-4835-82a7-a35d997e248c",
@@ -192,7 +192,7 @@
       "unit_cost": 1.13,
       "unit_charge": 3,
       "qty": 1,
-      "settled": false
+      "settled": true
     },
     {
       "id": "6f94dc8f-f169-44f3-8e3c-73945b99b700",
@@ -216,6 +216,28 @@
       "created_at": "2026-08-21T17:39:29.537Z",
       "updated_at": "2026-08-21T17:39:29.886Z",
       "claimed_by": "buyer_team_zeta"
+    }
+  ],
+  "upi_transactions": [
+    {
+      "id": "1d23e7b3-0d04-43b1-a2d2-290cb65114d8",
+      "utr": "UTR145457556892",
+      "payer_name": "padma",
+      "amount": 54.7,
+      "matched_bill_id": "0654ab08-15a1-48f1-95fa-8d89107423f9",
+      "matched_line_id": "35f98fb8-c5fe-4650-bf9f-6cf32c211f25",
+      "status": "MATCHED",
+      "received_at": "2026-08-22T19:28:09.162Z"
+    },
+    {
+      "id": "aa82f126-0e5e-4206-a22a-5ca8b668d92f",
+      "utr": "UTR746862303403",
+      "payer_name": "AKSHAT",
+      "amount": 30,
+      "matched_bill_id": "0654ab08-15a1-48f1-95fa-8d89107423f9",
+      "matched_line_id": null,
+      "status": "MATCHED",
+      "received_at": "2026-08-22T19:29:00.816Z"
     }
   ]
 }
