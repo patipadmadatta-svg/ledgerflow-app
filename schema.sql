@@ -60,6 +60,22 @@ CREATE TABLE IF NOT EXISTS upi_transactions (
   received_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   matched_bill_id UUID REFERENCES bills(id) ON DELETE SET NULL,
   matched_line_id UUID REFERENCES bill_lines(id) ON DELETE SET NULL,
-  status TEXT NOT NULL CHECK (status IN ('UNMATCHED', 'MATCHED', 'PARTIAL_MATCH', 'IGNORED'))
+  status TEXT NOT NULL CHECK (status IN ('UNMATCHED', 'MATCHED', 'PARTIAL_MATCH', 'IGNORED')),
+  user_id TEXT DEFAULT 'default-freelancer-id'
 );
 
+-- Users Table
+CREATE TABLE IF NOT EXISTS users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT UNIQUE NOT NULL,
+  username TEXT NOT NULL,
+  password TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Pending OTPs Table
+CREATE TABLE IF NOT EXISTS pending_otps (
+  email TEXT PRIMARY KEY,
+  otp TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

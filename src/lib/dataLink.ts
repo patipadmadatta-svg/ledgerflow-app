@@ -35,7 +35,9 @@ function readMockDB() {
       bills: [],
       bill_lines: [],
       cashbridge_offers: [],
-      upi_transactions: []
+      upi_transactions: [],
+      users: [],
+      pending_otps: []
     };
     fs.writeFileSync(MOCK_DB_PATH, JSON.stringify(initialData, null, 2));
     return initialData;
@@ -46,6 +48,12 @@ function readMockDB() {
     if (!parsed.upi_transactions) {
       parsed.upi_transactions = [];
     }
+    if (!parsed.users) {
+      parsed.users = [];
+    }
+    if (!parsed.pending_otps) {
+      parsed.pending_otps = [];
+    }
     return parsed;
   } catch (e) {
     console.error('Failed to parse mock DB, resetting:', e);
@@ -54,7 +62,9 @@ function readMockDB() {
       bills: [],
       bill_lines: [],
       cashbridge_offers: [],
-      upi_transactions: []
+      upi_transactions: [],
+      users: [],
+      pending_otps: []
     };
     fs.writeFileSync(MOCK_DB_PATH, JSON.stringify(initialData, null, 2));
     return initialData;
@@ -463,4 +473,113 @@ export async function updateUpiTransaction(id: string, updates: Partial<UpiTrans
   if (error) throw error;
   return data;
 }
+
+// ==========================================
+// User Authentication API
+// ==========================================
+
+export async function getUserByEmail(email: string): Promise<any | null> {
+  const normEmail = email.trim().toLowerCase();
+  if (isMockMode) {
+    const db = readMockDB();
+    return db.users.find((u: any) => u.email.trim().toLowerCase() === normEmail) || null;
+  }
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('email', normEmail)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function createUser(user: { email: string; username: string; password_hash: string }): Promise<any> {
+  const newUser = {
+    email: user.email.trim().toLowerCase(),
+    username: user.username.trim(),
+    password: user.password_hash
+  };
+
+  if (isMockMode) {
+    const db = readMockDB();
+    const createdUser = {
+      id: crypto.randomUUID(),
+      ...newUser,
+      created_at: new Date().toISOString()
+    };
+    db.users.push(createdUser);
+    writeMockDB(db);
+    return createdUser;
+  }
+  const { data, error } = await supabase
+    .from('users')
+    .insert([newUser])
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function saveOtp(email: string, otp: string): Promise<any> {
+  const normEmail = email.trim().toLowerCase();
+  if (isMockMode) {
+    const db = readMockDB();
+    const index = db.pending_otps.findIndex((o: any) => o.email === normEmail);
+    const otpData = {
+      email: normEmail,
+      otp,
+      created_at: new Date().toISOString()
+    };
+    if (index !== -1) {
+      db.pending_otps[index] = otpData;
+    } else {
+      db.pending_otps.push(otpData);
+    }
+    writeMockDB(db);
+    return otpData;
+  }
+  
+  // Clean up any existing OTP entries for this email address to prevent duplicate keys
+  await supabase.from('pending_otps').delete().eq('email', normEmail);
+  
+  const { data, error } = await supabase
+    .from('pending_otps')
+    .insert([{ email: normEmail, otp }])
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function getOtp(email: string): Promise<any | null> {
+  const normEmail = email.trim().toLowerCase();
+  if (isMockMode) {
+    const db = readMockDB();
+    return db.pending_otps.find((o: any) => o.email === normEmail) || null;
+  }
+  const { data, error } = await supabase
+    .from('pending_otps')
+    .select('*')
+    .eq('email', normEmail)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteOtp(email: string): Promise<boolean> {
+  const normEmail = email.trim().toLowerCase();
+  if (isMockMode) {
+    const db = readMockDB();
+    db.pending_otps = db.pending_otps.filter((o: any) => o.email !== normEmail);
+    writeMockDB(db);
+    return true;
+  }
+  const { error } = await supabase
+    .from('pending_otps')
+    .delete()
+    .eq('email', normEmail);
+  if (error) throw error;
+  return true;
+}
+
 
