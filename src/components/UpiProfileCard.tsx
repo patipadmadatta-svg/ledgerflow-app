@@ -12,26 +12,42 @@ export default function UpiProfileCard() {
   const [tempName, setTempName] = useState('');
 
   useEffect(() => {
-    // Load config from localStorage
     const sessionStr = localStorage.getItem('ledgerflow_session');
     if (!sessionStr) return;
     const session = JSON.parse(sessionStr);
+    const userId = session.userId;
 
-    const savedConfigStr = localStorage.getItem('ledgerflow_upi_config');
-    if (savedConfigStr) {
-      const saved = JSON.parse(savedConfigStr);
-      setUpiId(saved.upiId || `${session.name.toLowerCase()}@upi`);
-      setPayeeName(saved.payeeName || session.name);
-    } else {
-      const defaultUpi = `${session.name.toLowerCase()}@upi`;
-      const defaultName = session.name;
-      setUpiId(defaultUpi);
-      setPayeeName(defaultName);
-      localStorage.setItem(
-        'ledgerflow_upi_config',
-        JSON.stringify({ upiId: defaultUpi, payeeName: defaultName })
-      );
+    async function loadDbProfile() {
+      try {
+        const res = await fetch('/api/auth/profile', {
+          headers: { 'x-user-id': userId }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setUpiId(data.upiId || `${session.name.toLowerCase()}@upi`);
+          setPayeeName(data.payeeName || session.name);
+          localStorage.setItem('ledgerflow_upi_config', JSON.stringify({
+            upiId: data.upiId || `${session.name.toLowerCase()}@upi`,
+            payeeName: data.payeeName || session.name
+          }));
+        } else {
+          // Fallback to local
+          const savedConfigStr = localStorage.getItem('ledgerflow_upi_config');
+          if (savedConfigStr) {
+            const saved = JSON.parse(savedConfigStr);
+            setUpiId(saved.upiId || `${session.name.toLowerCase()}@upi`);
+            setPayeeName(saved.payeeName || session.name);
+          } else {
+            setUpiId(`${session.name.toLowerCase()}@upi`);
+            setPayeeName(session.name);
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
+
+    loadDbProfile();
   }, []);
 
   const handleStartEdit = () => {
@@ -40,7 +56,7 @@ export default function UpiProfileCard() {
     setEditing(true);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!tempUpi.trim() || !tempUpi.includes('@')) {
       alert('Please enter a valid UPI ID (e.g. name@upi)');
@@ -51,14 +67,45 @@ export default function UpiProfileCard() {
       return;
     }
 
-    setUpiId(tempUpi.trim());
-    setPayeeName(tempName.trim());
-    setEditing(false);
+    const sessionStr = localStorage.getItem('ledgerflow_session');
+    if (!sessionStr) return;
+    const session = JSON.parse(sessionStr);
+    const userId = session.userId;
 
-    localStorage.setItem(
-      'ledgerflow_upi_config',
-      JSON.stringify({ upiId: tempUpi.trim(), payeeName: tempName.trim() })
-    );
+    try {
+      const res = await fetch('/api/auth/profile', {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-user-id': userId
+        },
+        body: JSON.stringify({
+          upiId: tempUpi.trim(),
+          payeeName: tempName.trim()
+        })
+      });
+
+      if (res.ok) {
+        setUpiId(tempUpi.trim());
+        setPayeeName(tempName.trim());
+        setEditing(false);
+        localStorage.setItem(
+          'ledgerflow_upi_config',
+          JSON.stringify({ upiId: tempUpi.trim(), payeeName: tempName.trim() })
+        );
+      } else {
+        alert('Failed to save profile on server. Keeping local version.');
+        setUpiId(tempUpi.trim());
+        setPayeeName(tempName.trim());
+        setEditing(false);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Network error. Profile saved locally.');
+      setUpiId(tempUpi.trim());
+      setPayeeName(tempName.trim());
+      setEditing(false);
+    }
   };
 
   // Generate UPI payment URL

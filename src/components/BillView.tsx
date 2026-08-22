@@ -45,6 +45,8 @@ interface Bill {
   lateFees: number;
   daysOverdue: number;
   totalOutstanding: number;
+  freelancerUpiId?: string;
+  freelancerName?: string;
 }
 
 interface BillViewProps {
@@ -57,20 +59,9 @@ export default function BillView({ initialBill, onMutation }: BillViewProps) {
   const [bill, setBill] = useState<Bill>(initialBill);
   const [showReminder, setShowReminder] = useState(false);
   const [updating, setUpdating] = useState<string | null>(null);
-  const [upiId, setUpiId] = useState('');
-  const [payeeName, setPayeeName] = useState('');
 
-  useEffect(() => {
-    const savedConfigStr = localStorage.getItem('ledgerflow_upi_config');
-    if (savedConfigStr) {
-      const saved = JSON.parse(savedConfigStr);
-      setUpiId(saved.upiId || 'freelancer@upi');
-      setPayeeName(saved.payeeName || 'Freelancer');
-    } else {
-      setUpiId('freelancer@upi');
-      setPayeeName('Freelancer');
-    }
-  }, []);
+  const upiId = bill.freelancerUpiId || 'freelancer@upi';
+  const payeeName = bill.freelancerName || 'Freelancer';
 
   const upiPayUri = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${bill.totalOutstanding}&tn=Invoice%20${bill.bill_number}&cu=INR`;
   const invoiceQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiPayUri)}`;

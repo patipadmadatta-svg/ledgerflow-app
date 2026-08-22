@@ -604,4 +604,45 @@ export async function deleteOtp(email: string): Promise<boolean> {
   return true;
 }
 
+export async function getUserById(id: string): Promise<any | null> {
+  if (isMockMode) {
+    const db = readMockDB();
+    return db.users.find((u: any) => u.id === id) || null;
+  }
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateUserProfile(
+  userId: string,
+  profile: { upi_id: string; payee_name: string }
+): Promise<any | null> {
+  if (isMockMode) {
+    const db = readMockDB();
+    const index = db.users.findIndex((u: any) => u.id === userId);
+    if (index === -1) return null;
+    db.users[index] = {
+      ...db.users[index],
+      upi_id: profile.upi_id,
+      payee_name: profile.payee_name
+    };
+    writeMockDB(db);
+    return db.users[index];
+  }
+  const { data, error } = await supabase
+    .from('users')
+    .update(profile)
+    .eq('id', userId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+
 

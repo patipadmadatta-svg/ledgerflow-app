@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getBillById, updateBill, deleteBill } from '@/lib/dataLink';
+import { getBillById, updateBill, deleteBill, getUserById } from '@/lib/dataLink';
 import { computeBillTotals } from '@/lib/ledgerMath';
 
 export async function GET(
@@ -16,15 +16,16 @@ export async function GET(
       return NextResponse.json({ error: 'Bill not found' }, { status: 404 });
     }
 
-    if ((bill.user_id || 'default-freelancer-id') !== userId) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
+    // Load creator profile details for payment QR generation
+    const creator = await getUserById(bill.user_id || 'default-freelancer-id');
 
     const totals = computeBillTotals(bill, bill.bill_lines || []);
     return NextResponse.json({
       ...bill,
       ...totals,
-      state: totals.derivedState // Apply derived state override on read
+      state: totals.derivedState,
+      freelancerUpiId: creator?.upi_id || 'freelancer@upi',
+      freelancerName: creator?.payee_name || creator?.username || 'Freelancer'
     });
   } catch (error: any) {
     console.error('Error fetching bill detail:', error);
