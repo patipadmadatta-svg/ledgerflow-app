@@ -8,6 +8,7 @@ import BillLedger from '@/components/BillLedger';
 import { useTranslation } from '@/lib/LanguageContext';
 import SmartReminderModal from '@/components/SmartReminderModal';
 import UpiReconcilePanel from '@/components/UpiReconcilePanel';
+import UpiProfileCard from '@/components/UpiProfileCard';
 
 export default function Dashboard() {
   const { t } = useTranslation();
@@ -219,6 +220,9 @@ export default function Dashboard() {
               </div>
             )}
           </div>
+          
+          {/* Payment QR Code Config */}
+          <UpiProfileCard />
         </div>
       </div>
       {activeReminderBill && (

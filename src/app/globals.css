@@ -390,3 +390,51 @@ a:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* Light Theme Variables and Styling Overrides */
+body.light-theme {
+  --bg-color: #f8fafc;
+  --surface-color: #ffffff;
+  --surface-hover: #f1f5f9;
+  --border-color: #e2e8f0;
+  --border-hover: #cbd5e1;
+  
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  
+  --color-primary: #4f46e5;
+  --glass-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+  
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.03) 0%, transparent 40%);
+}
+
+body.light-theme .glass-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03);
+}
+
+body.light-theme .glass-card:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+body.light-theme .input-control {
+  background: #ffffff;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+body.light-theme .input-control:focus {
+  background: #ffffff;
+  border-color: var(--color-primary);
+}
+
+body.light-theme select.input-control option {
+  background: #ffffff;
+  color: #0f172a;
+}
+

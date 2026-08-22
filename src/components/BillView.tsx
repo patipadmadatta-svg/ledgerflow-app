@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import StatePill from './StatePill';
 import SmartReminderModal from './SmartReminderModal';
 import { useTranslation } from '@/lib/LanguageContext';
@@ -55,8 +55,25 @@ interface BillViewProps {
 export default function BillView({ initialBill, onMutation }: BillViewProps) {
   const { t } = useTranslation();
   const [bill, setBill] = useState<Bill>(initialBill);
-  const [updating, setUpdating] = useState<string | null>(null);
   const [showReminder, setShowReminder] = useState(false);
+  const [updating, setUpdating] = useState<string | null>(null);
+  const [upiId, setUpiId] = useState('');
+  const [payeeName, setPayeeName] = useState('');
+
+  useEffect(() => {
+    const savedConfigStr = localStorage.getItem('ledgerflow_upi_config');
+    if (savedConfigStr) {
+      const saved = JSON.parse(savedConfigStr);
+      setUpiId(saved.upiId || 'freelancer@upi');
+      setPayeeName(saved.payeeName || 'Freelancer');
+    } else {
+      setUpiId('freelancer@upi');
+      setPayeeName('Freelancer');
+    }
+  }, []);
+
+  const upiPayUri = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${bill.totalOutstanding}&tn=Invoice%20${bill.bill_number}&cu=INR`;
+  const invoiceQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiPayUri)}`;
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -206,33 +223,74 @@ export default function BillView({ initialBill, onMutation }: BillViewProps) {
           )}
         </div>
 
-        {/* Ledger Dues quick-stats */}
-        <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <h4 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Outstanding Dues Checklist</h4>
-          
-          {/* Service Fee Toggle */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.95rem' }}>
-            <span>Labor/Service Fee ({formatCurrency(bill.service_fee)})</span>
-            <label className="toggle-settled-container">
-              <input 
-                type="checkbox"
-                checked={bill.service_fee_settled}
-                onChange={handleToggleFeeSettled}
-                disabled={updating === 'service-fee'}
-                style={{ width: '16px', height: '16px', accentColor: 'var(--color-success)' }}
-              />
-              <span style={{ color: bill.service_fee_settled ? 'var(--color-success)' : 'var(--color-warning)', fontWeight: 500, fontSize: '0.85rem' }}>
-                {bill.service_fee_settled ? 'Paid' : 'Unpaid'}
-              </span>
-            </label>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          {/* Ledger Dues quick-stats */}
+          <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <h4 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Outstanding Dues Checklist</h4>
+            
+            {/* Service Fee Toggle */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.95rem' }}>
+              <span>Labor/Service Fee ({formatCurrency(bill.service_fee)})</span>
+              <label className="toggle-settled-container">
+                <input 
+                  type="checkbox"
+                  checked={bill.service_fee_settled}
+                  onChange={handleToggleFeeSettled}
+                  disabled={updating === 'service-fee'}
+                  style={{ width: '16px', height: '16px', accentColor: 'var(--color-success)' }}
+                />
+                <span style={{ color: bill.service_fee_settled ? 'var(--color-success)' : 'var(--color-warning)', fontWeight: 500, fontSize: '0.85rem' }}>
+                  {bill.service_fee_settled ? 'Paid' : 'Unpaid'}
+                </span>
+              </label>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed var(--border-color)', paddingTop: '0.5rem', marginTop: '0.25rem' }}>
+              <span style={{ color: 'var(--text-secondary)' }}>Total Outstanding:</span>
+              <strong style={{ color: bill.totalOutstanding > 0 ? 'var(--color-warning)' : 'var(--color-success)', fontSize: '1.1rem' }}>
+                {formatCurrency(bill.totalOutstanding)}
+              </strong>
+            </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed var(--border-color)', paddingTop: '0.5rem', marginTop: '0.25rem' }}>
-            <span style={{ color: 'var(--text-secondary)' }}>Total Outstanding:</span>
-            <strong style={{ color: bill.totalOutstanding > 0 ? 'var(--color-warning)' : 'var(--color-success)', fontSize: '1.1rem' }}>
-              {formatCurrency(bill.totalOutstanding)}
-            </strong>
-          </div>
+          {/* Dynamic Invoice QR Code */}
+          {bill.totalOutstanding > 0 && (
+            <div style={{
+              background: 'rgba(99, 102, 241, 0.02)',
+              border: '1px dashed rgba(99, 102, 241, 0.2)',
+              borderRadius: '8px',
+              padding: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1.25rem'
+            }}>
+              <div style={{
+                background: 'white',
+                padding: '0.5rem',
+                borderRadius: '8px',
+                display: 'inline-flex'
+              }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img 
+                  src={invoiceQrUrl} 
+                  alt="Invoice QR" 
+                  style={{ width: '80px', height: '80px', display: 'block' }} 
+                />
+              </div>
+              <div>
+                <h5 style={{ fontSize: '0.85rem', color: 'white', marginBottom: '0.15rem' }}>
+                  {t('Scan to Pay')}
+                </h5>
+                <div style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--color-warning)', marginBottom: '0.25rem' }}>
+                  {formatCurrency(bill.totalOutstanding)}
+                </div>
+                <p style={{ fontSize: '0.725rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
+                  UPI: {upiId}<br/>
+                  Payee: {payeeName}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

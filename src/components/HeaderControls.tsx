@@ -10,6 +10,8 @@ export default function HeaderControls() {
   const pathname = usePathname();
   const [session, setSession] = useState<any>(null);
 
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
   const loadSession = () => {
     if (typeof window !== 'undefined') {
       const sessionStr = localStorage.getItem('ledgerflow_session');
@@ -24,8 +26,30 @@ export default function HeaderControls() {
   useEffect(() => {
     loadSession();
     window.addEventListener('storage', loadSession);
+
+    // Initial theme loading
+    const savedTheme = localStorage.getItem('ledgerflow_theme') as 'dark' | 'light';
+    if (savedTheme) {
+      setTheme(savedTheme);
+      if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+      }
+    }
+
     return () => window.removeEventListener('storage', loadSession);
   }, []);
+
+  const toggleTheme = () => {
+    if (theme === 'dark') {
+      setTheme('light');
+      document.body.classList.add('light-theme');
+      localStorage.setItem('ledgerflow_theme', 'light');
+    } else {
+      setTheme('dark');
+      document.body.classList.remove('light-theme');
+      localStorage.setItem('ledgerflow_theme', 'dark');
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('ledgerflow_session');
@@ -37,7 +61,7 @@ export default function HeaderControls() {
   const isLoginPage = pathname === '/login';
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
       {!isLoginPage && session && (
         <nav className="nav-links" style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
           <Link href="/dashboard" className="nav-link">Dashboard</Link>
@@ -45,6 +69,29 @@ export default function HeaderControls() {
         </nav>
       )}
       
+      {/* Theme Toggle Button */}
+      <button
+        onClick={toggleTheme}
+        type="button"
+        title="Toggle Theme"
+        style={{
+          background: 'var(--surface-color)',
+          border: '1px solid var(--border-color)',
+          borderRadius: '50%',
+          width: '36px',
+          height: '36px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          fontSize: '1rem',
+          color: 'var(--text-primary)',
+          transition: 'var(--transition-smooth)'
+        }}
+      >
+        {theme === 'dark' ? '☀️' : '🌙'}
+      </button>
+
       <LanguageSelector />
 
       {!isLoginPage && session && (
