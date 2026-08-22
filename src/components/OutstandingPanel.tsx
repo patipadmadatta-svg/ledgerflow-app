@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
+import SmartReminderModal from './SmartReminderModal';
+import { useTranslation } from '@/lib/LanguageContext';
 
 interface UnsettledLine {
   billId: string;
@@ -36,7 +38,9 @@ interface OutstandingPanelProps {
 }
 
 export default function OutstandingPanel({ outstandingPayers, onMutation }: OutstandingPanelProps) {
+  const { t } = useTranslation();
   const [updating, setUpdating] = useState<string | null>(null);
+  const [activeBill, setActiveBill] = useState<any>(null);
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -99,9 +103,10 @@ export default function OutstandingPanel({ outstandingPayers, onMutation }: Outs
   };
 
   return (
-    <div className="glass-card" id="outstanding-panel" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', transition: 'var(--transition-smooth)' }}>
+    <>
+      <div className="glass-card" id="outstanding-panel" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', transition: 'var(--transition-smooth)' }}>
       <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem', fontSize: '1.25rem' }}>
-        Outstanding Dues by Payer
+        {t('Outstanding Dues by Payer')}
       </h3>
 
       {outstandingPayers.length === 0 ? (
@@ -149,9 +154,25 @@ export default function OutstandingPanel({ outstandingPayers, onMutation }: Outs
                         {line.label} <span style={{ color: 'var(--text-muted)' }}>({line.qty}x)</span>
                       </span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Due {formatDate(line.dueDate)}</span>
-                      <strong style={{ minWidth: '80px', textAlign: 'right' }}>{formatCurrency(line.amount)}</strong>
+                      <strong style={{ minWidth: '70px', textAlign: 'right' }}>{formatCurrency(line.amount)}</strong>
+                      <button
+                        type="button"
+                        onClick={() => setActiveBill({
+                          id: line.billId,
+                          bill_number: line.billNumber,
+                          due_date: line.dueDate,
+                          billTotal: line.amount,
+                          totalOutstanding: line.amount,
+                          daysOverdue: Math.max(0, Math.floor((new Date().getTime() - new Date(line.dueDate).getTime()) / (1000 * 60 * 60 * 24))),
+                          payers: { name: payer.payerName, phone: payer.phone }
+                        })}
+                        style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.95rem', padding: '0 2px' }}
+                        title="Send Smart Reminder"
+                      >
+                        💬
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -172,11 +193,27 @@ export default function OutstandingPanel({ outstandingPayers, onMutation }: Outs
                         Labor Service Fee
                       </span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Due {formatDate(fee.dueDate)}</span>
-                      <strong style={{ minWidth: '80px', textAlign: 'right', color: 'var(--text-primary)' }}>
+                      <strong style={{ minWidth: '70px', textAlign: 'right', color: 'var(--text-primary)' }}>
                         {formatCurrency(fee.serviceFee)}
                       </strong>
+                      <button
+                        type="button"
+                        onClick={() => setActiveBill({
+                          id: fee.billId,
+                          bill_number: fee.billNumber,
+                          due_date: fee.dueDate,
+                          billTotal: fee.serviceFee,
+                          totalOutstanding: fee.serviceFee,
+                          daysOverdue: Math.max(0, Math.floor((new Date().getTime() - new Date(fee.dueDate).getTime()) / (1000 * 60 * 60 * 24))),
+                          payers: { name: payer.payerName, phone: payer.phone }
+                        })}
+                        style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.95rem', padding: '0 2px' }}
+                        title="Send Smart Reminder"
+                      >
+                        💬
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -186,5 +223,12 @@ export default function OutstandingPanel({ outstandingPayers, onMutation }: Outs
         </div>
       )}
     </div>
+      {activeBill && (
+        <SmartReminderModal
+          bill={activeBill}
+          onClose={() => setActiveBill(null)}
+        />
+      )}
+    </>
   );
 }

@@ -6,7 +6,7 @@ interface StatePillProps {
 
 export default function StatePill({ state }: StatePillProps) {
   let badgeClass = 'badge-draft';
-  let label = state || 'DRAFT';
+  let label: string = state || 'DRAFT';
 
   switch (state) {
     case 'DRAFT':

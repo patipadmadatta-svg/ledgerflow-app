@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { useTranslation } from '@/lib/LanguageContext';
 
 interface WheelSummary {
   wheelRevenue: number;
@@ -17,6 +18,7 @@ interface MoneyWheelProps {
 }
 
 export default function MoneyWheel({ summary }: MoneyWheelProps) {
+  const { t } = useTranslation();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -57,9 +59,9 @@ export default function MoneyWheel({ summary }: MoneyWheelProps) {
   return (
     <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <h3 style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span>Money Wheel Summary</span>
+        <span>{t('Money Wheel Summary')}</span>
         <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>
-          Total Billed: {formatCurrency(totalBilled)}
+          {t('Total Billed')}: {formatCurrency(totalBilled)}
         </span>
       </h3>
       
@@ -108,7 +110,7 @@ export default function MoneyWheel({ summary }: MoneyWheelProps) {
           justifyContent: 'center'
         }}>
           <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-secondary)', letterSpacing: '0.05em' }}>
-            Settled / Received
+            {t('Settled / Received')}
           </span>
           <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--color-success)', fontFamily: 'Space Grotesk' }}>
             {formatCurrency(summary.wheelSettled || 0)}
@@ -126,22 +128,22 @@ export default function MoneyWheel({ summary }: MoneyWheelProps) {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--color-danger)' }}></div>
-          <span style={{ color: 'var(--text-secondary)' }}>Cost:</span>
+          <span style={{ color: 'var(--text-secondary)' }}>{t('Cost')}:</span>
           <strong style={{ marginLeft: 'auto' }}>{formatCurrency(summary.wheelCost || 0)}</strong>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--color-success)' }}></div>
-          <span style={{ color: 'var(--text-secondary)' }}>Margin:</span>
+          <span style={{ color: 'var(--text-secondary)' }}>{t('Margin')}:</span>
           <strong style={{ marginLeft: 'auto' }}>{formatCurrency(summary.wheelMargin || 0)}</strong>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--color-warning)' }}></div>
-          <span style={{ color: 'var(--text-secondary)' }}>Levy:</span>
+          <span style={{ color: 'var(--text-secondary)' }}>{t('Levy')}:</span>
           <strong style={{ marginLeft: 'auto' }}>{formatCurrency(summary.wheelLevy || 0)}</strong>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--color-outstanding)' }}></div>
-          <span style={{ color: 'var(--text-secondary)' }}>Owed:</span>
+          <span style={{ color: 'var(--text-secondary)' }}>{t('Owed')}:</span>
           <strong style={{ marginLeft: 'auto' }}>{formatCurrency(summary.wheelOutstanding || 0)}</strong>
         </div>
       </div>

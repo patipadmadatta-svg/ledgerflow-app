@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { useTranslation } from '@/lib/LanguageContext';
 
 interface SettlementSplitProps {
   wheelSettled: number;
@@ -9,6 +10,7 @@ interface SettlementSplitProps {
 }
 
 export default function SettlementSplit({ wheelSettled, wheelOutstanding }: SettlementSplitProps) {
+  const { t } = useTranslation();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -61,7 +63,7 @@ export default function SettlementSplit({ wheelSettled, wheelOutstanding }: Sett
 
   return (
     <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <h3 style={{ marginBottom: '1rem' }}>Collection Status (Settlement Split)</h3>
+      <h3 style={{ marginBottom: '1rem' }}>{t('Collection Status (Settlement Split)')}</h3>
       
       <div style={{ position: 'relative', width: '100%', height: '220px', margin: 'auto' }}>
         <ResponsiveContainer width="100%" height="100%">
@@ -105,7 +107,7 @@ export default function SettlementSplit({ wheelSettled, wheelOutstanding }: Sett
           pointerEvents: 'none'
         }}>
           <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
-            Collection Rate
+            {t('Collection Rate')}
           </span>
           <span style={{ fontSize: '1.75rem', fontWeight: 'bold', color: 'var(--color-primary)', fontFamily: 'Space Grotesk', display: 'block' }}>
             {settledPercent}%
@@ -122,7 +124,7 @@ export default function SettlementSplit({ wheelSettled, wheelOutstanding }: Sett
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.25rem 0' }}>
           <div style={{ width: '10px', height: '10px', borderRadius: '3px', backgroundColor: 'var(--color-success)' }}></div>
-          <span style={{ color: 'var(--text-secondary)' }}>Settled (Received):</span>
+          <span style={{ color: 'var(--text-secondary)' }}>{t('Settled (Received)')}:</span>
           <strong style={{ marginLeft: 'auto' }}>{formatCurrency(wheelSettled)} ({settledPercent}%)</strong>
         </div>
         <div 
@@ -141,7 +143,7 @@ export default function SettlementSplit({ wheelSettled, wheelOutstanding }: Sett
           className="outstanding-shortcut"
         >
           <div style={{ width: '10px', height: '10px', borderRadius: '3px', backgroundColor: 'var(--color-warning)' }}></div>
-          <span style={{ color: 'var(--text-secondary)' }}>Outstanding (Owed):</span>
+          <span style={{ color: 'var(--text-secondary)' }}>{t('Outstanding (Owed)')}:</span>
           <strong style={{ marginLeft: 'auto', color: 'var(--color-warning)' }}>
             {formatCurrency(wheelOutstanding)} ({outstandingPercent}%) →
           </strong>

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import StatePill from './StatePill';
+import { useTranslation } from '@/lib/LanguageContext';
 
 interface Payer {
   id: string;
@@ -26,6 +27,7 @@ interface BillLedgerProps {
 }
 
 export default function BillLedger({ bills }: BillLedgerProps) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [stateFilter, setStateFilter] = useState<string>('ALL');
 
@@ -60,12 +62,12 @@ export default function BillLedger({ bills }: BillLedgerProps) {
     <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       {/* Ledger Header controls */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <h3 style={{ fontSize: '1.25rem' }}>Invoice Ledger</h3>
+        <h3 style={{ fontSize: '1.25rem' }}>{t('Invoice Ledger')}</h3>
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           {/* Search bar */}
           <input 
             type="text"
-            placeholder="Search by Bill # or Payer..."
+            placeholder={t('Search by Bill # or Payer...')}
             className="input-control"
             style={{ padding: '0.4rem 0.8rem', fontSize: '0.9rem', width: '220px' }}
             value={search}
@@ -79,17 +81,17 @@ export default function BillLedger({ bills }: BillLedgerProps) {
             value={stateFilter}
             onChange={e => setStateFilter(e.target.value)}
           >
-            <option value="ALL">All States</option>
-            <option value="DRAFT">Draft</option>
-            <option value="ISSUED">Issued</option>
-            <option value="PART_SETTLED">Part Paid</option>
-            <option value="SETTLED">Fully Paid</option>
-            <option value="LAPSED">Overdue</option>
+            <option value="ALL">{t('All States')}</option>
+            <option value="DRAFT">{t('Draft')}</option>
+            <option value="ISSUED">{t('Issued')}</option>
+            <option value="PART_SETTLED">{t('Part Paid')}</option>
+            <option value="SETTLED">{t('Fully Paid')}</option>
+            <option value="LAPSED">{t('Overdue')}</option>
           </select>
 
           {/* Add Bill Button */}
           <Link href="/bills/new" className="btn btn-primary btn-sm">
-            + New Bill
+            + {t('New Bill')}
           </Link>
         </div>
       </div>

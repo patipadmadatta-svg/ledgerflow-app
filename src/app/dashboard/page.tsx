@@ -5,8 +5,10 @@ import MoneyWheel from '@/components/MoneyWheel';
 import SettlementSplit from '@/components/SettlementSplit';
 import OutstandingPanel from '@/components/OutstandingPanel';
 import BillLedger from '@/components/BillLedger';
+import { useTranslation } from '@/lib/LanguageContext';
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const [bills, setBills] = useState([]);
   const [summary, setSummary] = useState({
     wheelRevenue: 0,
@@ -79,9 +81,9 @@ export default function Dashboard() {
       {/* Top Welcome Title */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 600 }}>Overview</h2>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 600 }}>{t('Overview')}</h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Real-time insights on billing costs, margin tax, and receivable collections.
+            {t('Real-time insights on billing costs, margin tax, and receivable collections.')}
           </p>
         </div>
       </div>
@@ -109,7 +111,7 @@ export default function Dashboard() {
           {/* Late Fees & Interest Tracker Card */}
           <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', fontSize: '1.15rem', color: 'var(--color-danger)' }}>
-              ⚠️ Late Fees & Overdue Interest
+              ⚠️ {t('Late Fees & Overdue Interest')}
             </h3>
             {overdueBillsWithFees.length === 0 ? (
               <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', padding: '1rem 0' }}>
@@ -134,7 +136,7 @@ export default function Dashboard() {
                         {bill.payers?.name || 'Payer'}
                       </span>
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
-                        Overdue by {bill.daysOverdue} days (₹100 / 5 days)
+                        {t('Overdue by')} {bill.daysOverdue} {t('days')} (₹100 / 5 days)
                       </div>
                     </div>
                     <div style={{ textAlign: 'right', fontWeight: 'bold', color: 'var(--color-danger)', fontSize: '0.95rem' }}>

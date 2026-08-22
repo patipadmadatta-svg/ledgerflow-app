@@ -23,6 +23,62 @@
       "email": "patipadmadatta@gmail.com",
       "address": "AT APILO,PO-JHADESWARPUR,BLOCK-MAHANGA",
       "created_at": "2026-08-21T17:58:33.637Z"
+    },
+    {
+      "id": "4949668b-c2a0-429f-aa70-5891622fe285",
+      "name": "AKSHAT",
+      "phone": "6758465865",
+      "email": "willow@gmail.com",
+      "address": "cuttack",
+      "created_at": "2026-08-21T18:15:47.256Z"
+    },
+    {
+      "id": "6a6fcc84-ecfe-4552-b368-2b5c5ea1f9ad",
+      "name": "Shivansh",
+      "phone": "9345678192",
+      "email": "shivanshkittu@gmail.com",
+      "address": "kp25,bbsr,odisha",
+      "created_at": "2026-08-21T18:22:02.725Z"
+    },
+    {
+      "id": "cea41803-7daa-4051-8bfc-bf4148cdad0e",
+      "name": "Padmna",
+      "phone": "687465836",
+      "email": "padma@gmial.com",
+      "address": "cuttack",
+      "created_at": "2026-08-21T18:23:05.634Z"
+    },
+    {
+      "id": "217ffef0-5bb1-45cb-aa5b-9377725a629f",
+      "name": "padma",
+      "phone": "848376658",
+      "email": "pamda@gmial.copm",
+      "address": "bbsr",
+      "created_at": "2026-08-21T18:24:38.166Z"
+    },
+    {
+      "id": "5d724595-e2ea-46f7-8093-cb30cfe6641f",
+      "name": "hiiteh",
+      "phone": "6577354637",
+      "email": "bybysgiyaua@gmsil.com",
+      "address": "bbsr",
+      "created_at": "2026-08-21T18:29:19.729Z"
+    },
+    {
+      "id": "4a7a023d-dd5e-43f0-9e6f-c62ced098381",
+      "name": "Shivang",
+      "phone": "9899024198",
+      "email": "25051924@kiit.ac.in",
+      "address": "AT APILO,PO-JHADESWARPUR,BLOCK-MAHANGA",
+      "created_at": "2026-08-21T18:34:17.740Z"
+    },
+    {
+      "id": "14c154b5-ba82-413a-8365-0e59d0e8c5f8",
+      "name": "Shivang",
+      "phone": "94632427",
+      "email": "25501923@gmail.com",
+      "address": "MG road",
+      "created_at": "2026-08-22T04:54:51.808Z"
     }
   ],
   "bills": [
@@ -37,7 +93,7 @@
       "service_fee_settled": false,
       "state": "ISSUED",
       "created_at": "2026-08-21T17:38:52.352Z",
-      "updated_at": "2026-08-21T17:38:53.305Z"
+      "updated_at": "2026-08-22T04:57:28.521Z"
     },
     {
       "id": "bce21901-dcc1-4e76-8c69-23afcd04927d",
@@ -50,7 +106,46 @@
       "service_fee_settled": false,
       "state": "ISSUED",
       "created_at": "2026-08-21T17:39:29.382Z",
-      "updated_at": "2026-08-21T17:39:29.382Z"
+      "updated_at": "2026-08-22T04:51:58.915Z"
+    },
+    {
+      "id": "43304fc7-be58-4cee-b1e2-db0cd7d184fe",
+      "bill_number": "LF-0003",
+      "payer_id": "217ffef0-5bb1-45cb-aa5b-9377725a629f",
+      "date": "2026-08-21T18:25:07.012Z",
+      "due_date": "2026-09-04T00:00:00.000Z",
+      "levy_rate": 34,
+      "service_fee": 48,
+      "service_fee_settled": true,
+      "state": "ISSUED",
+      "created_at": "2026-08-21T18:25:07.012Z",
+      "updated_at": "2026-08-21T22:37:11.292Z"
+    },
+    {
+      "id": "0654ab08-15a1-48f1-95fa-8d89107423f9",
+      "bill_number": "LF-0004",
+      "payer_id": "4949668b-c2a0-429f-aa70-5891622fe285",
+      "date": "2026-08-21T19:41:31.769Z",
+      "due_date": "2026-09-04T00:00:00.000Z",
+      "levy_rate": 0.05,
+      "service_fee": 30,
+      "service_fee_settled": true,
+      "state": "ISSUED",
+      "created_at": "2026-08-21T19:41:31.769Z",
+      "updated_at": "2026-08-21T22:36:42.835Z"
+    },
+    {
+      "id": "8f2ce5d0-72cb-4835-82a7-a35d997e248c",
+      "bill_number": "LF-0006",
+      "payer_id": "2d2572a8-b056-403d-9b6a-c192aca13696",
+      "date": "2026-08-22T05:03:37.774Z",
+      "due_date": "2026-09-05T00:00:00.000Z",
+      "levy_rate": 18,
+      "service_fee": 300,
+      "service_fee_settled": false,
+      "state": "ISSUED",
+      "created_at": "2026-08-22T05:03:37.774Z",
+      "updated_at": "2026-08-22T07:36:54.705Z"
     }
   ],
   "bill_lines": [
@@ -70,7 +165,7 @@
       "unit_cost": 1000,
       "unit_charge": 1500,
       "qty": 1,
-      "settled": false
+      "settled": true
     },
     {
       "id": "2947201f-8136-4151-8bba-c45ae8ff93db",
@@ -79,7 +174,34 @@
       "unit_cost": 4000,
       "unit_charge": 5000,
       "qty": 1,
-      "settled": false
+      "settled": true
+    },
+    {
+      "id": "c8b959db-f9f4-47f9-bff8-80f933416e32",
+      "bill_id": "43304fc7-be58-4cee-b1e2-db0cd7d184fe",
+      "label": "3",
+      "unit_cost": 3,
+      "unit_charge": 5,
+      "qty": 1,
+      "settled": true
+    },
+    {
+      "id": "35f98fb8-c5fe-4650-bf9f-6cf32c211f25",
+      "bill_id": "0654ab08-15a1-48f1-95fa-8d89107423f9",
+      "label": "APP",
+      "unit_cost": 1.13,
+      "unit_charge": 3,
+      "qty": 1,
+      "settled": true
+    },
+    {
+      "id": "6f94dc8f-f169-44f3-8e3c-73945b99b700",
+      "bill_id": "8f2ce5d0-72cb-4835-82a7-a35d997e248c",
+      "label": "ac",
+      "unit_cost": 8000,
+      "unit_charge": 8500,
+      "qty": 1,
+      "settled": true
     }
   ],
   "cashbridge_offers": [

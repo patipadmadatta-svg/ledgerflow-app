@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import StatePill from './StatePill';
+import SmartReminderModal from './SmartReminderModal';
+import { useTranslation } from '@/lib/LanguageContext';
 
 interface Payer {
   id: string;
@@ -51,8 +53,10 @@ interface BillViewProps {
 }
 
 export default function BillView({ initialBill, onMutation }: BillViewProps) {
+  const { t } = useTranslation();
   const [bill, setBill] = useState<Bill>(initialBill);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [showReminder, setShowReminder] = useState(false);
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -150,9 +154,14 @@ export default function BillView({ initialBill, onMutation }: BillViewProps) {
             Due Date: {formatDate(bill.due_date)} {bill.state === 'LAPSED' && '(OVERDUE)'}
           </p>
         </div>
-        <button onClick={handleDeleteInvoice} className="btn btn-danger btn-sm">
-          Delete Invoice
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button onClick={() => setShowReminder(true)} className="btn btn-secondary btn-sm" style={{ border: '1px solid var(--color-primary)', color: 'white' }}>
+            💬 {t('Send WhatsApp Reminder')}
+          </button>
+          <button onClick={handleDeleteInvoice} className="btn btn-danger btn-sm">
+            {t('Delete Invoice')}
+          </button>
+        </div>
       </div>
 
       {/* Payer and Ledger Grid */}
@@ -270,28 +279,28 @@ export default function BillView({ initialBill, onMutation }: BillViewProps) {
       <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem' }}>
         <div style={{ width: '350px', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-secondary)' }}>Line Revenue:</span>
+            <span style={{ color: 'var(--text-secondary)' }}>{t('Line Revenue')}:</span>
             <span>{formatCurrency(bill.lineRevenue)}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-secondary)' }}>Line Cost:</span>
+            <span style={{ color: 'var(--text-secondary)' }}>{t('Line Cost')}:</span>
             <span style={{ color: 'var(--color-danger)' }}>{formatCurrency(bill.lineCost)}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 500 }}>
-            <span style={{ color: 'var(--text-secondary)' }}>Margin (Profit):</span>
+            <span style={{ color: 'var(--text-secondary)' }}>{t('Margin')}:</span>
             <span style={{ color: 'var(--color-success)' }}>{formatCurrency(bill.margin)}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-secondary)' }}>Levy Tax ({bill.levy_rate}%):</span>
+            <span style={{ color: 'var(--text-secondary)' }}>{t('Levy')} ({bill.levy_rate}%):</span>
             <span>{formatCurrency(bill.levyAmount)}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-secondary)' }}>Service Labor Fee:</span>
+            <span style={{ color: 'var(--text-secondary)' }}>{t('Labor/Service Fee')}:</span>
             <span>{formatCurrency(bill.service_fee)}</span>
           </div>
           {bill.lateFees > 0 && (
             <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-danger)', fontWeight: 500 }}>
-              <span>Overdue Late Fees:</span>
+              <span>{t('Overdue Late Fees:')}</span>
               <span>+{formatCurrency(bill.lateFees)}</span>
             </div>
           )}
@@ -303,11 +312,14 @@ export default function BillView({ initialBill, onMutation }: BillViewProps) {
             fontSize: '1.25rem',
             fontWeight: 'bold'
           }}>
-            <span>Total Bill:</span>
+            <span>{t('Total Bill')}:</span>
             <span style={{ color: 'var(--color-primary)' }}>{formatCurrency(bill.billTotal)}</span>
           </div>
         </div>
       </div>
+      {showReminder && (
+        <SmartReminderModal bill={bill} onClose={() => setShowReminder(false)} />
+      )}
     </div>
   );
 }
