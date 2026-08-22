@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 // Import Types
-import { Payer, BillLine, RawBill } from './ledgerMath';
+import { Payer, BillLine, RawBill, UpiTransaction } from './ledgerMath';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -34,21 +34,27 @@ function readMockDB() {
       payers: [],
       bills: [],
       bill_lines: [],
-      cashbridge_offers: []
+      cashbridge_offers: [],
+      upi_transactions: []
     };
     fs.writeFileSync(MOCK_DB_PATH, JSON.stringify(initialData, null, 2));
     return initialData;
   }
   try {
     const data = fs.readFileSync(MOCK_DB_PATH, 'utf-8');
-    return JSON.parse(data);
+    const parsed = JSON.parse(data);
+    if (!parsed.upi_transactions) {
+      parsed.upi_transactions = [];
+    }
+    return parsed;
   } catch (e) {
     console.error('Failed to parse mock DB, resetting:', e);
     const initialData = {
       payers: [],
       bills: [],
       bill_lines: [],
-      cashbridge_offers: []
+      cashbridge_offers: [],
+      upi_transactions: []
     };
     fs.writeFileSync(MOCK_DB_PATH, JSON.stringify(initialData, null, 2));
     return initialData;
@@ -391,3 +397,66 @@ export async function claimOffer(offerId: string, claimedBy: string): Promise<an
   if (error) throw error;
   return data;
 }
+
+// ==========================================
+// UPI Transactions API
+// ==========================================
+
+export async function getUpiTransactions(): Promise<UpiTransaction[]> {
+  if (isMockMode) {
+    const db = readMockDB();
+    return [...db.upi_transactions].sort((a: any, b: any) => 
+      new Date(b.received_at).getTime() - new Date(a.received_at).getTime()
+    );
+  }
+  const { data, error } = await supabase
+    .from('upi_transactions')
+    .select('*')
+    .order('received_at', { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function createUpiTransaction(tx: Omit<UpiTransaction, 'id' | 'received_at'>): Promise<UpiTransaction> {
+  if (isMockMode) {
+    const db = readMockDB();
+    const newTx: UpiTransaction = {
+      id: crypto.randomUUID(),
+      ...tx,
+      received_at: new Date().toISOString()
+    };
+    db.upi_transactions.push(newTx);
+    writeMockDB(db);
+    return newTx;
+  }
+  const { data, error } = await supabase
+    .from('upi_transactions')
+    .insert([tx])
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateUpiTransaction(id: string, updates: Partial<UpiTransaction>): Promise<UpiTransaction | null> {
+  if (isMockMode) {
+    const db = readMockDB();
+    const index = db.upi_transactions.findIndex((t: any) => t.id === id);
+    if (index === -1) return null;
+    db.upi_transactions[index] = {
+      ...db.upi_transactions[index],
+      ...updates
+    };
+    writeMockDB(db);
+    return db.upi_transactions[index];
+  }
+  const { data, error } = await supabase
+    .from('upi_transactions')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+

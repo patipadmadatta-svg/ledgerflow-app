@@ -78,6 +78,13 @@ const DICTIONARY: Record<LanguageCode, Record<string, string>> = {
     'Total Outstanding Owed': 'कुल बकाया राशि',
     'Invoices Ledger History': 'बिलिंग बही इतिहास',
     'Overdue Late Fees:': 'विलंब शुल्क (ब्याज):',
+    'UPI Real-Time Reconciliation': 'UPI वास्तविक समय मिलान',
+    'Auto-matches incoming bank alerts to invoice line costs': 'इनकमिंग बैंक अलर्ट्स को स्वचालित रूप से बिल आइटम से मिलान करें',
+    'Incoming Transaction Stream': 'आने वाले लेन-देन की धारा',
+    'UTR / Payer': 'UTR / भुगतानकर्ता',
+    'Amount': 'राशि',
+    'Status': 'स्थिति',
+    'Actions': 'कार्रवाई',
   },
   ta: {
     'Overview': 'கண்ணோட்டம்',

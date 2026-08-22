@@ -189,3 +189,15 @@ export function computeWheelSummary(bills: ComputedBill[]): WheelSummary {
     wheelSettled: Math.round(wheelSettled * 100) / 100
   };
 }
+
+export interface UpiTransaction {
+  id: string;
+  utr: string;
+  payer_name: string;
+  amount: number;
+  received_at: string;
+  matched_bill_id?: string | null;
+  matched_line_id?: string | null;
+  status: 'UNMATCHED' | 'MATCHED' | 'PARTIAL_MATCH' | 'IGNORED';
+}
+

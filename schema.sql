@@ -50,3 +50,16 @@ CREATE TABLE IF NOT EXISTS cashbridge_offers (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- UPI Transactions Table
+CREATE TABLE IF NOT EXISTS upi_transactions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  utr TEXT NOT NULL UNIQUE,
+  payer_name TEXT NOT NULL,
+  amount DOUBLE PRECISION NOT NULL,
+  received_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  matched_bill_id UUID REFERENCES bills(id) ON DELETE SET NULL,
+  matched_line_id UUID REFERENCES bill_lines(id) ON DELETE SET NULL,
+  status TEXT NOT NULL CHECK (status IN ('UNMATCHED', 'MATCHED', 'PARTIAL_MATCH', 'IGNORED'))
+);
+

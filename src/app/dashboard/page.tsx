@@ -7,6 +7,7 @@ import OutstandingPanel from '@/components/OutstandingPanel';
 import BillLedger from '@/components/BillLedger';
 import { useTranslation } from '@/lib/LanguageContext';
 import SmartReminderModal from '@/components/SmartReminderModal';
+import UpiReconcilePanel from '@/components/UpiReconcilePanel';
 
 export default function Dashboard() {
   const { t } = useTranslation();
@@ -98,6 +99,9 @@ export default function Dashboard() {
           wheelOutstanding={summary.wheelOutstanding} 
         />
       </div>
+
+      {/* UPI Reconciliation Control Panel */}
+      <UpiReconcilePanel bills={bills} onMutation={fetchDashboardData} />
 
       {/* Main split grid: Ledger vs Dues */}
       <div className="dashboard-layout">

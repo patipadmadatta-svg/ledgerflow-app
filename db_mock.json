@@ -129,10 +129,10 @@
       "due_date": "2026-09-04T00:00:00.000Z",
       "levy_rate": 0.05,
       "service_fee": 30,
-      "service_fee_settled": true,
+      "service_fee_settled": false,
       "state": "ISSUED",
       "created_at": "2026-08-21T19:41:31.769Z",
-      "updated_at": "2026-08-21T22:36:42.835Z"
+      "updated_at": "2026-08-22T10:27:43.136Z"
     },
     {
       "id": "8f2ce5d0-72cb-4835-82a7-a35d997e248c",
@@ -142,10 +142,10 @@
       "due_date": "2026-09-05T00:00:00.000Z",
       "levy_rate": 18,
       "service_fee": 300,
-      "service_fee_settled": false,
+      "service_fee_settled": true,
       "state": "ISSUED",
       "created_at": "2026-08-22T05:03:37.774Z",
-      "updated_at": "2026-08-22T07:36:54.705Z"
+      "updated_at": "2026-08-22T10:07:04.670Z"
     }
   ],
   "bill_lines": [
@@ -192,7 +192,7 @@
       "unit_cost": 1.13,
       "unit_charge": 3,
       "qty": 1,
-      "settled": true
+      "settled": false
     },
     {
       "id": "6f94dc8f-f169-44f3-8e3c-73945b99b700",
