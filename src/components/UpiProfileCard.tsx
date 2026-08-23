@@ -122,7 +122,8 @@ export default function UpiProfileCard() {
       cleanPhone = '91' + cleanPhone;
     }
 
-    const messageText = `Hi!\n\nHere are my payment details for direct transfers:\n\n👤 *Payee Name*: ${payeeName}\n💳 *UPI ID (VPA)*: ${upiId}\n\n🔗 *Pay Directly via UPI Link*:\n${upiUri}\n\nThank you!`;
+    const qrImageLink = `https://quickchart.io/qr?text=${encodeURIComponent(upiUri)}&width=250&height=250`;
+    const messageText = `Hi!\n\nHere is my payment QR Code:\n${qrImageLink}\n\n👤 *Payee Name*: ${payeeName}\n💳 *UPI ID (VPA)*: ${upiId}\n\n🔗 *Pay Directly via UPI Link*:\n${upiUri}\n\nThank you!`;
     const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageText)}`;
     window.open(waUrl, '_blank');
     setShowShareForm(false);
@@ -131,7 +132,7 @@ export default function UpiProfileCard() {
 
   // Generate UPI payment URL
   const upiUri = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&cu=INR`;
-  const qrCodeUrl = `https://chart.googleapis.com/chart?cht=qr&chs=180x180&chl=${encodeURIComponent(upiUri)}`;
+  const qrCodeUrl = `https://quickchart.io/qr?text=${encodeURIComponent(upiUri)}&width=180&height=180`;
 
   return (
     <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

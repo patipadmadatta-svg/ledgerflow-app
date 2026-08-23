@@ -64,7 +64,7 @@ export default function BillView({ initialBill, onMutation }: BillViewProps) {
   const payeeName = bill.freelancerName || 'Freelancer';
 
   const upiPayUri = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${bill.totalOutstanding}&tn=Invoice%20${bill.bill_number}&cu=INR`;
-  const invoiceQrUrl = `https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl=${encodeURIComponent(upiPayUri)}`;
+  const invoiceQrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(upiPayUri)}&width=150&height=150`;
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -185,7 +185,8 @@ export default function BillView({ initialBill, onMutation }: BillViewProps) {
       cleanPhone = '91' + cleanPhone;
     }
 
-    const messageText = `Hi ${bill.payers.name},\n\nPlease find the payment details of *₹${bill.totalOutstanding.toLocaleString('en-IN')}* for *Invoice ${bill.bill_number}*.\n\n🔗 *Pay via UPI Link*:\n${upiPayUri}\n\n📱 *View Invoice & QR Code*:\n${pageUrl}\n\nThank you!`;
+    const qrImageLink = `https://quickchart.io/qr?text=${encodeURIComponent(upiPayUri)}&width=250&height=250`;
+    const messageText = `Hi ${bill.payers.name},\n\nPlease find the payment details of *₹${bill.totalOutstanding.toLocaleString('en-IN')}* for *Invoice ${bill.bill_number}*.\n\n📷 *Scan QR Code to Pay*:\n${qrImageLink}\n\n🔗 *Pay via UPI Link*:\n${upiPayUri}\n\n📱 *View Invoice & Details*:\n${pageUrl}\n\nThank you!`;
     const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageText)}`;
     window.open(waUrl, '_blank');
   };
