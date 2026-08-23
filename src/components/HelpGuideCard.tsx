@@ -7,6 +7,7 @@ export default function HelpGuideCard() {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
+  const [seeding, setSeeding] = useState(false);
 
   const slides = [
     {
@@ -30,6 +31,35 @@ export default function HelpGuideCard() {
       icon: '⚙️'
     }
   ];
+
+  const handleSeedData = async () => {
+    const sessionStr = localStorage.getItem('ledgerflow_session');
+    if (!sessionStr) return;
+    const session = JSON.parse(sessionStr);
+    const userId = session.userId;
+
+    setSeeding(true);
+    try {
+      const res = await fetch('/api/auth/profile/seed', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-user-id': userId
+        }
+      });
+      if (res.ok) {
+        alert('Sandbox demo data loaded successfully! Reloading...');
+        window.location.reload();
+      } else {
+        alert('Failed to load demo data.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error connecting to seeder service.');
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   return (
     <>
@@ -157,6 +187,25 @@ export default function HelpGuideCard() {
               Watch invoice line items switch to paid status in real-time.
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={handleSeedData}
+            disabled={seeding}
+            className="btn btn-secondary btn-sm"
+            style={{
+              width: '100%',
+              marginTop: '0.5rem',
+              borderColor: 'var(--color-primary)',
+              color: 'var(--color-primary)',
+              background: 'transparent',
+              fontWeight: 600,
+              cursor: 'pointer',
+              padding: '0.4rem 0'
+            }}
+          >
+            {seeding ? 'Loading Demo Data...' : '✨ Load Sandbox Demo Data'}
+          </button>
         </div>
 
         {/* Embedded Interactive Walkthrough Slider */}

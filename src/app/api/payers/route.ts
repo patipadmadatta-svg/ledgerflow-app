@@ -5,10 +5,6 @@ export async function GET(request: Request) {
   try {
     const userId = request.headers.get('x-user-id') || 'default-freelancer-id';
     
-    if (userId !== 'default-freelancer-id') {
-      await seedUserDemoData(userId);
-    }
-
     const payers = await getPayers();
     const filteredPayers = payers.filter((p: any) => (p.user_id || 'default-freelancer-id') === userId);
     return NextResponse.json(filteredPayers);
