@@ -10,6 +10,8 @@ export default function UpiProfileCard() {
   const [editing, setEditing] = useState(false);
   const [tempUpi, setTempUpi] = useState('');
   const [tempName, setTempName] = useState('');
+  const [showShareForm, setShowShareForm] = useState(false);
+  const [sharePhone, setSharePhone] = useState('');
 
   useEffect(() => {
     const sessionStr = localStorage.getItem('ledgerflow_session');
@@ -106,6 +108,25 @@ export default function UpiProfileCard() {
       setPayeeName(tempName.trim());
       setEditing(false);
     }
+  };
+
+  const handleShareWhatsApp = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!sharePhone.trim()) {
+      alert('Please enter a valid phone number');
+      return;
+    }
+    
+    let cleanPhone = sharePhone.replace(/[^0-9]/g, '');
+    if (cleanPhone.length === 10) {
+      cleanPhone = '91' + cleanPhone;
+    }
+
+    const messageText = `Hi!\n\nHere are my payment details for direct transfers:\n\n👤 *Payee Name*: ${payeeName}\n💳 *UPI ID (VPA)*: ${upiId}\n\n🔗 *Pay Directly via UPI Link*:\n${upiUri}\n\nThank you!`;
+    const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageText)}`;
+    window.open(waUrl, '_blank');
+    setShowShareForm(false);
+    setSharePhone('');
   };
 
   // Generate UPI payment URL
@@ -205,10 +226,54 @@ export default function UpiProfileCard() {
             textAlign: 'center',
             borderTop: '1px dashed var(--border-color)',
             paddingTop: '0.5rem',
-            width: '100%'
+            width: '100%',
+            marginBottom: '0.25rem'
           }}>
             Clients can scan this QR to pay you directly via GPay, PhonePe, or Paytm.
           </div>
+
+          {!showShareForm ? (
+            <button
+              type="button"
+              onClick={() => setShowShareForm(true)}
+              className="btn btn-secondary btn-sm"
+              style={{
+                width: '100%',
+                border: '1px solid #25D366',
+                color: '#25D366',
+                background: 'transparent',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                cursor: 'pointer',
+                padding: '0.4rem 0'
+              }}
+            >
+              💬 {t('Share Payment Details')}
+            </button>
+          ) : (
+            <form onSubmit={handleShareWhatsApp} style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <input
+                type="text"
+                placeholder="Client Phone (e.g. 9876543210)"
+                className="input-control"
+                value={sharePhone}
+                onChange={e => setSharePhone(e.target.value)}
+                style={{ padding: '0.4rem', fontSize: '0.8rem' }}
+                required
+              />
+              <div style={{ display: 'flex', gap: '0.4rem' }}>
+                <button type="submit" className="btn btn-primary btn-sm" style={{ flex: 1, padding: '0.35rem 0', fontSize: '0.8rem', background: '#25D366', border: 'none', color: 'white' }}>
+                  Send VPA
+                </button>
+                <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowShareForm(false)} style={{ flex: 1, padding: '0.35rem 0', fontSize: '0.8rem' }}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
         </div>
       )}
     </div>
