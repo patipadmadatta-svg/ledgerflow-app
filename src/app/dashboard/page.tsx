@@ -121,12 +121,6 @@ export default function Dashboard() {
       <div className="dashboard-layout">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <BillLedger bills={bills} />
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <OutstandingPanel 
-            outstandingPayers={outstanding} 
-            onMutation={fetchDashboardData} 
-          />
 
           {/* Dedicated WhatsApp Reminders Dispatcher Card */}
           <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -221,6 +215,13 @@ export default function Dashboard() {
               </div>
             )}
           </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <OutstandingPanel 
+            outstandingPayers={outstanding} 
+            onMutation={fetchDashboardData} 
+          />
           
           {/* Payment QR Code Config */}
           <UpiProfileCard />
