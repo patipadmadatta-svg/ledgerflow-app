@@ -110,7 +110,7 @@ export default function UpiProfileCard() {
 
   // Generate UPI payment URL
   const upiUri = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&cu=INR`;
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiUri)}`;
+  const qrCodeUrl = `https://chart.googleapis.com/chart?cht=qr&chs=180x180&chl=${encodeURIComponent(upiUri)}`;
 
   return (
     <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

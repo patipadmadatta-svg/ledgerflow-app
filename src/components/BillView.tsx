@@ -64,7 +64,7 @@ export default function BillView({ initialBill, onMutation }: BillViewProps) {
   const payeeName = bill.freelancerName || 'Freelancer';
 
   const upiPayUri = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${bill.totalOutstanding}&tn=Invoice%20${bill.bill_number}&cu=INR`;
-  const invoiceQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiPayUri)}`;
+  const invoiceQrUrl = `https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl=${encodeURIComponent(upiPayUri)}`;
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('en-IN', {
