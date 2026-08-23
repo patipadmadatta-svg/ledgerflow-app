@@ -18,8 +18,8 @@ export default function BillComposer() {
   // Form State
   const [payerId, setPayerId] = useState('');
   const [dueDate, setDueDate] = useState('');
-  const [levyRate, setLevyRate] = useState(0);
-  const [serviceFee, setServiceFee] = useState(0);
+  const [levyRate, setLevyRate] = useState<string>('');
+  const [serviceFee, setServiceFee] = useState<string>('');
   const [state, setState] = useState<'DRAFT' | 'ISSUED'>('ISSUED');
   
   // Lines list state
@@ -347,7 +347,7 @@ export default function BillComposer() {
               min="0"
               className="input-control"
               value={levyRate}
-              onChange={e => setLevyRate(parseFloat(e.target.value) || 0)}
+              onChange={e => setLevyRate(e.target.value)}
             />
           </div>
           <div className="form-group" style={{ marginBottom: 0 }}>
@@ -358,7 +358,7 @@ export default function BillComposer() {
               min="0"
               className="input-control"
               value={serviceFee}
-              onChange={e => setServiceFee(parseFloat(e.target.value) || 0)}
+              onChange={e => setServiceFee(e.target.value)}
             />
           </div>
         </div>
@@ -494,7 +494,7 @@ export default function BillComposer() {
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ color: 'var(--text-secondary)' }}>Labor Service Fee:</span>
-            <strong>₹ {serviceFee.toFixed(2)}</strong>
+            <strong>₹ {Number(serviceFee || 0).toFixed(2)}</strong>
           </div>
           <div style={{
             display: 'flex', 

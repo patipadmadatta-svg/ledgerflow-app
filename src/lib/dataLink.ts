@@ -644,5 +644,265 @@ export async function updateUserProfile(
   return data;
 }
 
+export async function seedUserDemoData(userId: string): Promise<void> {
+  if (isMockMode) {
+    const db = readMockDB();
+    
+    // Check if user already has seeded payers
+    const hasPayers = db.payers.some((p: any) => p.user_id === userId);
+    if (hasPayers) return;
+
+    // 1. Create Payers
+    const p1Id = crypto.randomUUID();
+    const p2Id = crypto.randomUUID();
+    const p3Id = crypto.randomUUID();
+
+    const seededPayers = [
+      {
+        id: p1Id,
+        name: 'Aarav Sharma',
+        phone: '9876543210',
+        email: 'aarav.sharma@okaxis',
+        address: 'HSR Layout, Bengaluru',
+        user_id: userId,
+        created_at: new Date().toISOString()
+      },
+      {
+        id: p2Id,
+        name: 'Ananya Iyer',
+        phone: '8765432109',
+        email: 'ananya.iyer@okicici',
+        address: 'Indiranagar, Bengaluru',
+        user_id: userId,
+        created_at: new Date().toISOString()
+      },
+      {
+        id: p3Id,
+        name: 'Kabir Mehta',
+        phone: '7654321098',
+        email: 'kabir.mehta@oksbi',
+        address: 'Andheri West, Mumbai',
+        user_id: userId,
+        created_at: new Date().toISOString()
+      }
+    ];
+
+    db.payers.push(...seededPayers);
+
+    // 2. Create Bills & Lines
+    const b1Id = crypto.randomUUID();
+    const b2Id = crypto.randomUUID();
+    const b3Id = crypto.randomUUID();
+
+    const futureDue = new Date();
+    futureDue.setDate(futureDue.getDate() + 5);
+
+    const pastDue1 = new Date();
+    pastDue1.setDate(pastDue1.getDate() - 10);
+
+    const pastDue2 = new Date();
+    pastDue2.setDate(pastDue2.getDate() - 15);
+
+    const seededBills = [
+      {
+        id: b1Id,
+        payer_id: p1Id,
+        bill_number: 'LF-ARR-001',
+        date: new Date().toISOString(),
+        due_date: futureDue.toISOString(),
+        levy_rate: 18,
+        service_fee: 1500,
+        service_fee_settled: false,
+        state: 'ISSUED',
+        user_id: userId
+      },
+      {
+        id: b2Id,
+        payer_id: p2Id,
+        bill_number: 'LF-ANA-002',
+        date: pastDue1.toISOString(),
+        due_date: pastDue1.toISOString(),
+        levy_rate: 18,
+        service_fee: 1000,
+        service_fee_settled: true,
+        state: 'SETTLED',
+        user_id: userId
+      },
+      {
+        id: b3Id,
+        payer_id: p3Id,
+        bill_number: 'LF-KAB-003',
+        date: pastDue2.toISOString(),
+        due_date: pastDue2.toISOString(),
+        levy_rate: 18,
+        service_fee: 2000,
+        service_fee_settled: false,
+        state: 'ISSUED',
+        user_id: userId
+      }
+    ];
+
+    db.bills.push(...seededBills);
+
+    const seededLines = [
+      // Aarav (unsettled)
+      {
+        id: crypto.randomUUID(),
+        bill_id: b1Id,
+        label: 'Custom UI Design Mockups',
+        unit_cost: 2000,
+        unit_charge: 8000,
+        qty: 1,
+        settled: false
+      },
+      {
+        id: crypto.randomUUID(),
+        bill_id: b1Id,
+        label: 'React Component Development',
+        unit_cost: 4000,
+        unit_charge: 12000,
+        qty: 1,
+        settled: false
+      },
+      // Ananya (settled)
+      {
+        id: crypto.randomUUID(),
+        bill_id: b2Id,
+        label: 'Technical Content Writing',
+        unit_cost: 500,
+        unit_charge: 5000,
+        qty: 1,
+        settled: true
+      },
+      {
+        id: crypto.randomUUID(),
+        bill_id: b2Id,
+        label: 'SEO Strategy Audit',
+        unit_cost: 500,
+        unit_charge: 3000,
+        qty: 1,
+        settled: true
+      },
+      // Kabir (unsettled overdue)
+      {
+        id: crypto.randomUUID(),
+        bill_id: b3Id,
+        label: 'WordPress Website Setup',
+        unit_cost: 3000,
+        unit_charge: 10000,
+        qty: 1,
+        settled: false
+      },
+      {
+        id: crypto.randomUUID(),
+        bill_id: b3Id,
+        label: 'Logo Branding Kit',
+        unit_cost: 1000,
+        unit_charge: 4000,
+        qty: 1,
+        settled: false
+      }
+    ];
+
+    db.bill_lines.push(...seededLines);
+
+    // 3. Create UPI simulator transactions
+    const seededTxs = [
+      {
+        id: crypto.randomUUID(),
+        utr: 'UTR' + Math.floor(100000000000 + Math.random() * 900000000000),
+        payer_name: 'Aarav Sharma',
+        amount: 20000, // matches line total
+        received_at: new Date().toISOString(),
+        matched_bill_id: null,
+        matched_line_id: null,
+        status: 'UNMATCHED',
+        user_id: userId
+      },
+      {
+        id: crypto.randomUUID(),
+        utr: 'UTR' + Math.floor(100000000000 + Math.random() * 900000000000),
+        payer_name: 'Kabir Mehta',
+        amount: 2000, // matches service fee
+        received_at: new Date().toISOString(),
+        matched_bill_id: null,
+        matched_line_id: null,
+        status: 'UNMATCHED',
+        user_id: userId
+      },
+      {
+        id: crypto.randomUUID(),
+        utr: 'UTR' + Math.floor(100000000000 + Math.random() * 900000000000),
+        payer_name: 'Rahul Roy',
+        amount: 5000, // random
+        received_at: new Date().toISOString(),
+        matched_bill_id: null,
+        matched_line_id: null,
+        status: 'UNMATCHED',
+        user_id: userId
+      }
+    ];
+
+    db.upi_transactions.push(...seededTxs);
+    writeMockDB(db);
+  } else {
+    // Hosted Supabase Mode Seeding
+    try {
+      const { data: existing } = await supabase
+        .from('payers')
+        .select('id')
+        .eq('user_id', userId)
+        .limit(1);
+
+      if (existing && existing.length > 0) return;
+
+      // Seeding in hosted database (inserts follow same pattern)
+      const p1Id = crypto.randomUUID();
+      const p2Id = crypto.randomUUID();
+      const p3Id = crypto.randomUUID();
+
+      await supabase.from('payers').insert([
+        { id: p1Id, name: 'Aarav Sharma', phone: '9876543210', email: 'aarav.sharma@okaxis', address: 'HSR Layout, Bengaluru', user_id: userId },
+        { id: p2Id, name: 'Ananya Iyer', phone: '8765432109', email: 'ananya.iyer@okicici', address: 'Indiranagar, Bengaluru', user_id: userId },
+        { id: p3Id, name: 'Kabir Mehta', phone: '7654321098', email: 'kabir.mehta@oksbi', address: 'Andheri West, Mumbai', user_id: userId }
+      ]);
+
+      const b1Id = crypto.randomUUID();
+      const b2Id = crypto.randomUUID();
+      const b3Id = crypto.randomUUID();
+
+      const futureDue = new Date();
+      futureDue.setDate(futureDue.getDate() + 5);
+      const pastDue1 = new Date();
+      pastDue1.setDate(pastDue1.getDate() - 10);
+      const pastDue2 = new Date();
+      pastDue2.setDate(pastDue2.getDate() - 15);
+
+      await supabase.from('bills').insert([
+        { id: b1Id, payer_id: p1Id, bill_number: 'LF-ARR-001', due_date: futureDue.toISOString(), levy_rate: 18, service_fee: 1500, service_fee_settled: false, state: 'ISSUED', user_id: userId },
+        { id: b2Id, payer_id: p2Id, bill_number: 'LF-ANA-002', due_date: pastDue1.toISOString(), levy_rate: 18, service_fee: 1000, service_fee_settled: true, state: 'SETTLED', user_id: userId },
+        { id: b3Id, payer_id: p3Id, bill_number: 'LF-KAB-003', due_date: pastDue2.toISOString(), levy_rate: 18, service_fee: 2000, service_fee_settled: false, state: 'ISSUED', user_id: userId }
+      ]);
+
+      await supabase.from('bill_lines').insert([
+        { id: crypto.randomUUID(), bill_id: b1Id, label: 'Custom UI Design Mockups', unit_cost: 2000, unit_charge: 8000, qty: 1, settled: false },
+        { id: crypto.randomUUID(), bill_id: b1Id, label: 'React Component Development', unit_cost: 4000, unit_charge: 12000, qty: 1, settled: false },
+        { id: crypto.randomUUID(), bill_id: b2Id, label: 'Technical Content Writing', unit_cost: 500, unit_charge: 5000, qty: 1, settled: true },
+        { id: crypto.randomUUID(), bill_id: b2Id, label: 'SEO Strategy Audit', unit_cost: 500, unit_charge: 3000, qty: 1, settled: true },
+        { id: crypto.randomUUID(), bill_id: b3Id, label: 'WordPress Website Setup', unit_cost: 3000, unit_charge: 10000, qty: 1, settled: false },
+        { id: crypto.randomUUID(), bill_id: b3Id, label: 'Logo Branding Kit', unit_cost: 1000, unit_charge: 4000, qty: 1, settled: false }
+      ]);
+
+      await supabase.from('upi_transactions').insert([
+        { id: crypto.randomUUID(), utr: 'UTR' + Math.floor(100000000000 + Math.random() * 900000000000), payer_name: 'Aarav Sharma', amount: 20000, status: 'UNMATCHED', user_id: userId },
+        { id: crypto.randomUUID(), utr: 'UTR' + Math.floor(100000000000 + Math.random() * 900000000000), payer_name: 'Kabir Mehta', amount: 2000, status: 'UNMATCHED', user_id: userId },
+        { id: crypto.randomUUID(), utr: 'UTR' + Math.floor(100000000000 + Math.random() * 900000000000), payer_name: 'Rahul Roy', amount: 5000, status: 'UNMATCHED', user_id: userId }
+      ]);
+    } catch (err) {
+      console.error('Error seeding supabase data:', err);
+    }
+  }
+}
+
 
 
